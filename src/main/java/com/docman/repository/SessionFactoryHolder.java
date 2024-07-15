@@ -1,6 +1,7 @@
 package com.docman.repository;
 
 import com.docman.model.ContractEntity;
+import com.docman.model.PaymentEntity;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -13,6 +14,7 @@ public class SessionFactoryHolder {
             Configuration configuration = new Configuration().configure();
             sessionFactory = configuration
                     .addAnnotatedClass(ContractEntity.class)
+                    .addAnnotatedClass(PaymentEntity.class)
                     .buildSessionFactory(
                             new StandardServiceRegistryBuilder()
                                     .applySettings(configuration.getProperties())

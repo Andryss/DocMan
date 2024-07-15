@@ -34,7 +34,7 @@ public class UpsertContractViewController {
         totalValueTextField.setText(String.valueOf(template.getTotalValue()));
     }
 
-    public void onAdd(ActionEvent event) {
+    public void onSave(ActionEvent event) {
         String number = numberTextField.getText().strip();
         if (number.isBlank()) {
             showWarning("Номер не должен быть пустым");

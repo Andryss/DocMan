@@ -3,14 +3,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
+<HBox maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
    <children>
-      <FlowPane>
+      <VBox>
          <children>
-            <Button mnemonicParsing="false" onAction="#onAdd" text="Добавить" />
-            <Button mnemonicParsing="false" onAction="#onEdit" text="Редактировать" />
+            <FlowPane>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onAddContract" text="Добавить" />
+                  <Button mnemonicParsing="false" onAction="#onEditContract" text="Редактировать" />
+               </children>
+            </FlowPane>
+            <TableView fx:id="contractTableView" prefWidth="600.0" />
          </children>
-      </FlowPane>
-      <TableView fx:id="contractTableView" prefWidth="600.0" />
+      </VBox>
+      <VBox>
+         <children>
+            <FlowPane>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onAddPayment" text="Добавить" />
+                  <Button mnemonicParsing="false" onAction="#onEditPayment" text="Редактировать" />
+               </children>
+            </FlowPane>
+            <TableView fx:id="paymentTableView" />
+         </children>
+      </VBox>
    </children>
-</VBox>
+</HBox>

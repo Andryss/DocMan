@@ -1,6 +1,7 @@
 package com.docman;
 
 import com.docman.model.ContractModel;
+import com.docman.model.PaymentModel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -27,6 +28,17 @@ public class ScreenUtil {
     }
 
     @SneakyThrows
+    public static Stage openUpsertPayment(long contractId, PaymentModel template) {
+        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.UPSERT_PAYMENT.fxmlFile));
+        Scene scene = new Scene(loader.load());
+
+        UpsertPaymentViewController controller = loader.getController();
+        controller.setTemplate(contractId, template);
+
+        return doOpen(scene, (template == null ? "Добавить" : "Редактировать"));
+    }
+
+    @SneakyThrows
     private static Stage doOpen(Scene scene, String title) {
         Stage stage = new Stage();
         stage.setTitle(title);
@@ -38,7 +50,8 @@ public class ScreenUtil {
     @RequiredArgsConstructor
     public enum DocManScreen {
         MAIN("main-view.fxml"),
-        UPSERT_CONTRACT("upsert-contract-view.fxml");
+        UPSERT_CONTRACT("upsert-contract-view.fxml"),
+        UPSERT_PAYMENT("upsert-payment-view.fxml");
 
         private final String fxmlFile;
     }

@@ -29,7 +29,7 @@
       </GridPane>
       <HBox alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#onAdd" prefWidth="80.0" text="Сохранить" />
+            <Button mnemonicParsing="false" onAction="#onSave" prefWidth="80.0" text="Сохранить" />
             <Button mnemonicParsing="false" onAction="#onCancel" prefWidth="80.0" text="Отмена" />
          </children>
       </HBox>
