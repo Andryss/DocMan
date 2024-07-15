@@ -57,6 +57,10 @@ public class MainViewController implements Initializable {
         TableColumn<ContractModel, Double> totalValueColumn = new TableColumn<>("Полная сумма");
         totalValueColumn.setCellValueFactory(new PropertyValueFactory<>("totalValue"));
         contractTableView.getColumns().add(totalValueColumn);
+
+        TableColumn<ContractModel, Double> remainingValueColumn = new TableColumn<>("Остаток");
+        remainingValueColumn.setCellValueFactory(new PropertyValueFactory<>("remainingValue"));
+        contractTableView.getColumns().add(remainingValueColumn);
     }
 
     private void initPaymentTableColumns() {
@@ -74,7 +78,8 @@ public class MainViewController implements Initializable {
     private void updateContractTable() {
         ObservableList<ContractModel> contracts = contractRepository.findAll().stream()
                 .map(e -> new ContractModel(
-                        e.getId(), e.getNumber(), e.getOpenDate(), e.getCloseDate(), e.getTotalValue()
+                        e.getId(), e.getNumber(), e.getOpenDate(),
+                        e.getCloseDate(), e.getTotalValue(), e.getRemainingValue()
                 ))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         contractTableView.setItems(contracts);
@@ -114,7 +119,10 @@ public class MainViewController implements Initializable {
             showWarning("Сначала нужно выбрать контракт");
             return;
         }
-        openUpsertPayment(selectedContract.getId(), null).setOnHiding(event -> updatePaymentTable());
+        openUpsertPayment(selectedContract, null).setOnHiding(event -> {
+            updateContractTable();
+            updatePaymentTable();
+        });
     }
 
     public void onEditPayment() {
@@ -128,6 +136,9 @@ public class MainViewController implements Initializable {
             showWarning("Оплата для редактирования не выбрана");
             return;
         }
-        openUpsertPayment(selectedContract.getId(), selectedPayment).setOnHiding(event -> updatePaymentTable());
+        openUpsertPayment(selectedContract, selectedPayment).setOnHiding(event -> {
+            updateContractTable();
+            updatePaymentTable();
+        });
     }
 }

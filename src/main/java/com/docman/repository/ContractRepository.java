@@ -1,6 +1,7 @@
 package com.docman.repository;
 
 import com.docman.model.ContractEntity;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -19,5 +20,16 @@ public class ContractRepository extends AbstractRepository {
 
     public void update(ContractEntity contract) {
         executeInTransaction(session -> session.update(contract));
+    }
+
+    public void updateByIdSetRemainingValue(Long id, double newRemaining) {
+        executeInTransaction(session -> {
+            Query query = session.createQuery(
+                    "update ContractEntity c set c.remainingValue = :newRemaining where c.id = :id"
+            );
+            query.setParameter("newRemaining", newRemaining);
+            query.setParameter("id", id);
+            query.executeUpdate();
+        });
     }
 }

@@ -1,7 +1,9 @@
 package com.docman;
 
+import com.docman.model.ContractModel;
 import com.docman.model.PaymentEntity;
 import com.docman.model.PaymentModel;
+import com.docman.repository.ContractRepository;
 import com.docman.repository.PaymentRepository;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -17,17 +19,18 @@ import static com.docman.AlertUtil.showWarning;
 
 public class UpsertPaymentViewController {
     private final PaymentRepository paymentRepository = PaymentRepository.INSTANCE;
+    private final ContractRepository contractRepository = ContractRepository.INSTANCE;
 
-    private long contractId;
-    private Long editingPaymentId;
+    private ContractModel contract;
+    private PaymentModel editingPayment;
 
     public DatePicker datePicker;
     public TextField paymentValueTextField;
 
-    public void setTemplate(long contractId, PaymentModel template) {
-        this.contractId = contractId;
+    public void setTemplate(ContractModel contractModel, PaymentModel template) {
+        contract = contractModel;
         if (template != null) {
-            editingPaymentId = template.getId();
+            editingPayment = template;
             datePicker.setValue(LocalDate.ofInstant(template.getDate(), ZoneId.systemDefault()));
             paymentValueTextField.setText(String.valueOf(template.getPaymentValue()));
         }
@@ -51,14 +54,28 @@ public class UpsertPaymentViewController {
         }
 
         PaymentEntity payment = new PaymentEntity();
-        payment.setContractId(contractId);
+        payment.setContractId(contract.getId());
         payment.setDate(date);
         payment.setPaymentValue(paymentValue);
 
-        if (editingPaymentId != null) {
-            payment.setId(editingPaymentId);
+        if (editingPayment != null) {
+            payment.setId(editingPayment.getId());
+            double remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
+            double newRemaining = remainingWithoutPayment - paymentValue;
+            if (newRemaining < 0) {
+                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", remainingWithoutPayment));
+                return;
+            }
+            contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             paymentRepository.update(payment);
         } else {
+            double remaining = contract.getRemainingValue();
+            double newRemaining = remaining - paymentValue;
+            if (newRemaining < 0) {
+                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", remaining));
+                return;
+            }
+            contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             paymentRepository.save(payment);
         }
 

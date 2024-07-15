@@ -18,7 +18,7 @@ import static com.docman.AlertUtil.showWarning;
 public class UpsertContractViewController {
     private final ContractRepository contractRepository = ContractRepository.INSTANCE;
 
-    private Long editingContractId;
+    private ContractModel editingContract;
 
     public TextField numberTextField;
     public DatePicker openDatePicker;
@@ -27,7 +27,7 @@ public class UpsertContractViewController {
 
     public void setTemplate(ContractModel template) {
         if (template == null) return;
-        this.editingContractId = template.getId();
+        editingContract = template;
         numberTextField.setText(template.getNumber());
         openDatePicker.setValue(LocalDate.ofInstant(template.getOpenDate(), ZoneId.systemDefault()));
         closeDatePicker.setValue(LocalDate.ofInstant(template.getCloseDate(), ZoneId.systemDefault()));
@@ -69,9 +69,16 @@ public class UpsertContractViewController {
         contract.setOpenDate(openDate);
         contract.setCloseDate(closeDate);
         contract.setTotalValue(totalValue);
+        contract.setRemainingValue(totalValue);
 
-        if (editingContractId != null) {
-            contract.setId(editingContractId);
+        if (editingContract != null) {
+            contract.setId(editingContract.getId());
+            double paid = editingContract.getTotalValue() - editingContract.getRemainingValue();
+            if (totalValue - paid < 0) {
+                showWarning(String.format("Полная стоимость должна быть больше, чем уже оплаченная сумма (%s)", paid));
+                return;
+            }
+            contract.setRemainingValue(contract.getTotalValue() - paid);
             contractRepository.update(contract);
         } else {
             contractRepository.save(contract);

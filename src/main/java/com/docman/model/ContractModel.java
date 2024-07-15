@@ -12,13 +12,15 @@ public class ContractModel {
     private final SimpleObjectProperty<Instant> openDate;
     private final SimpleObjectProperty<Instant> closeDate;
     private final SimpleDoubleProperty totalValue;
+    private final SimpleDoubleProperty remainingValue;
 
-    public ContractModel(Long id, String number, Instant openDate, Instant closeDate, double totalValue) {
+    public ContractModel(Long id, String number, Instant openDate, Instant closeDate, double totalValue, double remainingValue) {
         this.id = id;
         this.number = new SimpleStringProperty(number);
         this.openDate = new SimpleObjectProperty<>(openDate);
         this.closeDate = new SimpleObjectProperty<>(closeDate);
         this.totalValue = new SimpleDoubleProperty(totalValue);
+        this.remainingValue = new SimpleDoubleProperty(remainingValue);
     }
 
     public Long getId() {
@@ -71,5 +73,17 @@ public class ContractModel {
 
     public void setTotalValue(double totalValue) {
         this.totalValue.set(totalValue);
+    }
+
+    public double getRemainingValue() {
+        return remainingValue.get();
+    }
+
+    public SimpleDoubleProperty remainingValueProperty() {
+        return remainingValue;
+    }
+
+    public void setRemainingValue(double remainingValue) {
+        this.remainingValue.set(remainingValue);
     }
 }

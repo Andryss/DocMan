@@ -24,4 +24,5 @@ public class ContractEntity {
     private Instant openDate;
     private Instant closeDate;
     private Double totalValue;
+    private Double remainingValue;
 }
