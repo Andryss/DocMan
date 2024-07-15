@@ -15,14 +15,12 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 
 @Entity
-@Table(name = "contracts")
-public class ContractEntity {
+@Table(name = "notifications")
+public class NotificationEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String number;
-    private Instant openDate;
-    private Instant closeDate;
-    private long totalValue;
-    private long remainingValue;
+    private long contractId;
+    private Instant timeout;
+    private boolean isShown;
 }

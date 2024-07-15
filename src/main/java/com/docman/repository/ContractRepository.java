@@ -24,6 +24,7 @@ public class ContractRepository extends AbstractRepository {
 
     public void updateByIdSetRemainingValue(Long id, long newRemaining) {
         executeInTransaction(session -> {
+            //noinspection rawtypes
             Query query = session.createQuery(
                     "update ContractEntity c set c.remainingValue = :newRemaining where c.id = :id"
             );

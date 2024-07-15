@@ -20,7 +20,7 @@ public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private Long contractId;
+    private long contractId;
     private Instant date;
-    private Long paymentValue;
+    private long paymentValue;
 }

@@ -2,21 +2,30 @@ package com.docman;
 
 import com.docman.model.ContractEntity;
 import com.docman.model.ContractModel;
+import com.docman.model.NotificationEntity;
 import com.docman.repository.ContractRepository;
+import com.docman.repository.NotificationRepository;
 import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.*;
 
 import static com.docman.AlertUtil.showWarning;
+import static java.time.temporal.ChronoUnit.DAYS;
 
-public class UpsertContractViewController {
+public class UpsertContractViewController implements Initializable {
     private final ContractRepository contractRepository = ContractRepository.INSTANCE;
+    private final NotificationRepository notificationRepository = NotificationRepository.INSTANCE;
 
     private ContractModel editingContract;
 
@@ -24,6 +33,24 @@ public class UpsertContractViewController {
     public DatePicker openDatePicker;
     public DatePicker closeDatePicker;
     public TextField totalValueTextField;
+    public CheckBox oneDayBeforeCheckbox;
+    public CheckBox twoDaysBeforeCheckbox;
+    public CheckBox threeDaysBeforeCheckbox;
+    public CheckBox fiveDaysBeforeCheckbox;
+    public CheckBox tenDaysBeforeCheckbox;
+
+    private Map<CheckBox, Long> checkboxesDaysTimeout;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        checkboxesDaysTimeout = Map.of(
+                oneDayBeforeCheckbox, 1L,
+                twoDaysBeforeCheckbox, 2L,
+                threeDaysBeforeCheckbox, 3L,
+                fiveDaysBeforeCheckbox, 5L,
+                tenDaysBeforeCheckbox, 10L
+        );
+    }
 
     public void setTemplate(ContractModel template) {
         if (template == null) return;
@@ -32,6 +59,13 @@ public class UpsertContractViewController {
         openDatePicker.setValue(LocalDate.ofInstant(template.getOpenDate(), ZoneId.systemDefault()));
         closeDatePicker.setValue(LocalDate.ofInstant(template.getCloseDate(), ZoneId.systemDefault()));
         totalValueTextField.setText(CurrencyUtil.toDecimal(template.getTotalValue()).toString());
+
+        notificationRepository.findAllByContractId(template.getId()).forEach(notification -> {
+            long duration = Duration.between(notification.getTimeout(), template.getCloseDate()).toDays();
+            checkboxesDaysTimeout.forEach((checkBox, days) -> {
+                if (duration == days) checkBox.setSelected(true);
+            });
+        });
     }
 
     public void onSave(ActionEvent event) {
@@ -84,8 +118,27 @@ public class UpsertContractViewController {
         } else {
             contractRepository.save(contract);
         }
+        saveNewNotifications(contract);
 
         closeWindow(event);
+    }
+
+    private void saveNewNotifications(ContractEntity contract) {
+        notificationRepository.deleteAllNotShownByContractId(contract.getId());
+
+        List<NotificationEntity> notifications = new ArrayList<>();
+        Instant now = Instant.now();
+        checkboxesDaysTimeout.forEach((checkBox, days) -> {
+            Instant timeout = contract.getCloseDate().minus(days, DAYS);
+            if (checkBox.isSelected() && timeout.isAfter(now)) {
+                NotificationEntity n = new NotificationEntity();
+                n.setContractId(contract.getId());
+                n.setTimeout(timeout);
+                notifications.add(n);
+            }
+        });
+
+        notificationRepository.saveAll(notifications);
     }
 
     public void onCancel(ActionEvent event) {

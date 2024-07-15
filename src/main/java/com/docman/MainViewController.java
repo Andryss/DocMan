@@ -3,6 +3,7 @@ package com.docman;
 import com.docman.model.ContractModel;
 import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
+import com.docman.repository.NotificationRepository;
 import com.docman.repository.PaymentRepository;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -14,9 +15,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.docman.AlertUtil.showWarning;
@@ -26,6 +33,7 @@ import static com.docman.ScreenUtil.openUpsertPayment;
 public class MainViewController implements Initializable {
     private final ContractRepository contractRepository = ContractRepository.INSTANCE;
     private final PaymentRepository paymentRepository = PaymentRepository.INSTANCE;
+    private final NotificationRepository notificationRepository = NotificationRepository.INSTANCE;
 
     public TableView<ContractModel> contractTableView;
     public TableView<PaymentModel> paymentTableView;
@@ -39,6 +47,21 @@ public class MainViewController implements Initializable {
                 .addListener((obs, oldVal, newVal) -> updatePaymentTable());
 
         updateContractTable();
+    }
+
+    public void onShown() {
+        Map<Long, ContractModel> contractsMap = contractTableView.getItems().stream()
+                .collect(Collectors.toMap(ContractModel::getId, Function.identity()));
+        List<Long> shownIds = new ArrayList<>();
+        notificationRepository.findAllNotShownByTimeoutBefore(Instant.now()).forEach(notification -> {
+            ContractModel contract = contractsMap.get(notification.getContractId());
+            Duration duration = Duration.between(notification.getTimeout(), contract.getCloseDate());
+            AlertUtil.showNotification(contract.getNumber(), contract.getCloseDate(), duration.toDays());
+            shownIds.add(notification.getId());
+        });
+        if (!shownIds.isEmpty()) {
+            notificationRepository.setShownByIds(shownIds);
+        }
     }
 
     private void initContractTableColumns() {

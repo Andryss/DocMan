@@ -11,8 +11,9 @@ public class PaymentRepository extends AbstractRepository {
 
     public List<PaymentEntity> findAllByContractId(long contractId) {
         return executeInSession(session -> {
-            Query query = session.createQuery(
-                    "select p from PaymentEntity p where p.contractId = :contractId order by p.date desc"
+            Query<PaymentEntity> query = session.createQuery(
+                    "select p from PaymentEntity p where p.contractId = :contractId order by p.date desc",
+                    PaymentEntity.class
             );
             query.setParameter("contractId", contractId);
             return query.list();

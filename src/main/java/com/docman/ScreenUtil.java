@@ -2,18 +2,22 @@ package com.docman;
 
 import com.docman.model.ContractModel;
 import com.docman.model.PaymentModel;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 public class ScreenUtil {
 
     @SneakyThrows
-    public static void open(DocManScreen screen) {
-        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(screen.fxmlFile));
-        doOpen(new Scene(loader.load()), "DocMan");
+    public static void openMain() {
+        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.MAIN.fxmlFile));
+        Scene scene = new Scene(loader.load());
+        MainViewController controller = loader.getController();
+        doOpen(scene, "DocMan", event -> controller.onShown());
     }
 
     @SneakyThrows
@@ -40,9 +44,15 @@ public class ScreenUtil {
 
     @SneakyThrows
     private static Stage doOpen(Scene scene, String title) {
+        return doOpen(scene, title, null);
+    }
+
+    @SneakyThrows
+    private static Stage doOpen(Scene scene, String title, EventHandler<WindowEvent> onShown) {
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);
+        stage.setOnShown(onShown);
         stage.show();
         return stage;
     }

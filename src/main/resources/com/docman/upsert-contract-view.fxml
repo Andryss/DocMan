@@ -15,6 +15,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Label text="Номер договора" />
@@ -25,6 +26,16 @@
             <DatePicker fx:id="openDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <DatePicker fx:id="closeDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="totalValueTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Уведомления" GridPane.rowIndex="4" />
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <children>
+                  <CheckBox fx:id="oneDayBeforeCheckbox" mnemonicParsing="false" text="За 1 день" />
+                  <CheckBox fx:id="twoDaysBeforeCheckbox" mnemonicParsing="false" text="За 2 дня" />
+                  <CheckBox fx:id="threeDaysBeforeCheckbox" mnemonicParsing="false" text="За 3 дня" />
+                  <CheckBox fx:id="fiveDaysBeforeCheckbox" mnemonicParsing="false" text="За 5 дней" />
+                  <CheckBox fx:id="tenDaysBeforeCheckbox" mnemonicParsing="false" text="За 10 дней" />
+               </children>
+            </VBox>
          </children>
       </GridPane>
       <HBox alignment="CENTER">
