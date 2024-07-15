@@ -22,7 +22,7 @@ public class ContractRepository extends AbstractRepository {
         executeInTransaction(session -> session.update(contract));
     }
 
-    public void updateByIdSetRemainingValue(Long id, double newRemaining) {
+    public void updateByIdSetRemainingValue(Long id, long newRemaining) {
         executeInTransaction(session -> {
             Query query = session.createQuery(
                     "update ContractEntity c set c.remainingValue = :newRemaining where c.id = :id"

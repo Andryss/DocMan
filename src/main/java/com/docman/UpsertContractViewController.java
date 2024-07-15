@@ -31,7 +31,7 @@ public class UpsertContractViewController {
         numberTextField.setText(template.getNumber());
         openDatePicker.setValue(LocalDate.ofInstant(template.getOpenDate(), ZoneId.systemDefault()));
         closeDatePicker.setValue(LocalDate.ofInstant(template.getCloseDate(), ZoneId.systemDefault()));
-        totalValueTextField.setText(String.valueOf(template.getTotalValue()));
+        totalValueTextField.setText(CurrencyUtil.toDecimal(template.getTotalValue()).toString());
     }
 
     public void onSave(ActionEvent event) {
@@ -55,10 +55,10 @@ public class UpsertContractViewController {
         }
         Instant closeDate = closeDateValue.atStartOfDay(ZoneId.systemDefault()).toInstant();
 
-        double totalValue;
+        long totalValue;
         try {
             String totalValueStr = totalValueTextField.getText().strip();
-            totalValue = Double.parseDouble(totalValueStr);
+            totalValue = CurrencyUtil.parseCurrency(totalValueStr);
         } catch (NumberFormatException e) {
             showWarning("Неверный формат полной стоимости");
             return;
@@ -73,12 +73,13 @@ public class UpsertContractViewController {
 
         if (editingContract != null) {
             contract.setId(editingContract.getId());
-            double paid = editingContract.getTotalValue() - editingContract.getRemainingValue();
-            if (totalValue - paid < 0) {
-                showWarning(String.format("Полная стоимость должна быть больше, чем уже оплаченная сумма (%s)", paid));
+            long paid = editingContract.getTotalValue() - editingContract.getRemainingValue();
+            long newRemaining = totalValue - paid;
+            if (newRemaining < 0) {
+                showWarning(String.format("Полная стоимость должна быть больше, чем уже оплаченная сумма (%s)", CurrencyUtil.toDecimal(paid)));
                 return;
             }
-            contract.setRemainingValue(contract.getTotalValue() - paid);
+            contract.setRemainingValue(newRemaining);
             contractRepository.update(contract);
         } else {
             contractRepository.save(contract);

@@ -32,7 +32,7 @@ public class UpsertPaymentViewController {
         if (template != null) {
             editingPayment = template;
             datePicker.setValue(LocalDate.ofInstant(template.getDate(), ZoneId.systemDefault()));
-            paymentValueTextField.setText(String.valueOf(template.getPaymentValue()));
+            paymentValueTextField.setText(CurrencyUtil.toDecimal(template.getPaymentValue()).toString());
         }
     }
 
@@ -44,10 +44,10 @@ public class UpsertPaymentViewController {
         }
         Instant date = dateValue.atStartOfDay(ZoneId.systemDefault()).toInstant();
 
-        double paymentValue;
+        long paymentValue;
         try {
             String totalValueStr = paymentValueTextField.getText().strip();
-            paymentValue = Double.parseDouble(totalValueStr);
+            paymentValue = CurrencyUtil.parseCurrency(totalValueStr);
         } catch (NumberFormatException e) {
             showWarning("Неверный формат суммы платежа");
             return;
@@ -60,19 +60,19 @@ public class UpsertPaymentViewController {
 
         if (editingPayment != null) {
             payment.setId(editingPayment.getId());
-            double remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
-            double newRemaining = remainingWithoutPayment - paymentValue;
+            long remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
+            long newRemaining = remainingWithoutPayment - paymentValue;
             if (newRemaining < 0) {
-                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", remainingWithoutPayment));
+                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", CurrencyUtil.toDecimal(remainingWithoutPayment)));
                 return;
             }
             contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             paymentRepository.update(payment);
         } else {
-            double remaining = contract.getRemainingValue();
-            double newRemaining = remaining - paymentValue;
+            long remaining = contract.getRemainingValue();
+            long newRemaining = remaining - paymentValue;
             if (newRemaining < 0) {
-                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", remaining));
+                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", CurrencyUtil.toDecimal(remaining)));
                 return;
             }
             contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);

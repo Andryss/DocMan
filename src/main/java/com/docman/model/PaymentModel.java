@@ -1,6 +1,6 @@
 package com.docman.model;
 
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.time.Instant;
@@ -8,12 +8,12 @@ import java.time.Instant;
 public class PaymentModel {
     private final Long id;
     private final SimpleObjectProperty<Instant> date;
-    private final SimpleDoubleProperty paymentValue;
+    private final SimpleLongProperty paymentValue;
 
-    public PaymentModel(Long id, Instant date, double paymentValue) {
+    public PaymentModel(Long id, Instant date, long paymentValue) {
         this.id = id;
         this.date = new SimpleObjectProperty<>(date);
-        this.paymentValue = new SimpleDoubleProperty(paymentValue);
+        this.paymentValue = new SimpleLongProperty(paymentValue);
     }
 
     public Long getId() {
@@ -32,15 +32,15 @@ public class PaymentModel {
         this.date.set(date);
     }
 
-    public double getPaymentValue() {
+    public long getPaymentValue() {
         return paymentValue.get();
     }
 
-    public SimpleDoubleProperty paymentValueProperty() {
+    public SimpleLongProperty paymentValueProperty() {
         return paymentValue;
     }
 
-    public void setPaymentValue(double paymentValue) {
+    public void setPaymentValue(long paymentValue) {
         this.paymentValue.set(paymentValue);
     }
 }

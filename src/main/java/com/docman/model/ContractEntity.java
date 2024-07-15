@@ -23,6 +23,6 @@ public class ContractEntity {
     private String number;
     private Instant openDate;
     private Instant closeDate;
-    private Double totalValue;
-    private Double remainingValue;
+    private Long totalValue;
+    private Long remainingValue;
 }

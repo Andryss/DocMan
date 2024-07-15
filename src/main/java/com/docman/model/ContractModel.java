@@ -1,6 +1,6 @@
 package com.docman.model;
 
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -11,16 +11,16 @@ public class ContractModel {
     private final SimpleStringProperty number;
     private final SimpleObjectProperty<Instant> openDate;
     private final SimpleObjectProperty<Instant> closeDate;
-    private final SimpleDoubleProperty totalValue;
-    private final SimpleDoubleProperty remainingValue;
+    private final SimpleLongProperty totalValue;
+    private final SimpleLongProperty remainingValue;
 
-    public ContractModel(Long id, String number, Instant openDate, Instant closeDate, double totalValue, double remainingValue) {
+    public ContractModel(Long id, String number, Instant openDate, Instant closeDate, long totalValue, long remainingValue) {
         this.id = id;
         this.number = new SimpleStringProperty(number);
         this.openDate = new SimpleObjectProperty<>(openDate);
         this.closeDate = new SimpleObjectProperty<>(closeDate);
-        this.totalValue = new SimpleDoubleProperty(totalValue);
-        this.remainingValue = new SimpleDoubleProperty(remainingValue);
+        this.totalValue = new SimpleLongProperty(totalValue);
+        this.remainingValue = new SimpleLongProperty(remainingValue);
     }
 
     public Long getId() {
@@ -63,27 +63,27 @@ public class ContractModel {
         this.closeDate.set(closeDate);
     }
 
-    public double getTotalValue() {
+    public long getTotalValue() {
         return totalValue.get();
     }
 
-    public SimpleDoubleProperty totalValueProperty() {
+    public SimpleLongProperty totalValueProperty() {
         return totalValue;
     }
 
-    public void setTotalValue(double totalValue) {
+    public void setTotalValue(long totalValue) {
         this.totalValue.set(totalValue);
     }
 
-    public double getRemainingValue() {
+    public long getRemainingValue() {
         return remainingValue.get();
     }
 
-    public SimpleDoubleProperty remainingValueProperty() {
+    public SimpleLongProperty remainingValueProperty() {
         return remainingValue;
     }
 
-    public void setRemainingValue(double remainingValue) {
+    public void setRemainingValue(long remainingValue) {
         this.remainingValue.set(remainingValue);
     }
 }

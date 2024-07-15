@@ -22,5 +22,5 @@ public class PaymentEntity {
     private Long id;
     private Long contractId;
     private Instant date;
-    private Double paymentValue;
+    private Long paymentValue;
 }

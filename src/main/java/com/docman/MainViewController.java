@@ -12,6 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -34,6 +35,9 @@ public class MainViewController implements Initializable {
         initContractTableColumns();
         initPaymentTableColumns();
 
+        contractTableView.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, newVal) -> updatePaymentTable());
+
         updateContractTable();
     }
 
@@ -54,12 +58,16 @@ public class MainViewController implements Initializable {
         ));
         contractTableView.getColumns().add(closeDateColumn);
 
-        TableColumn<ContractModel, Double> totalValueColumn = new TableColumn<>("Полная сумма");
-        totalValueColumn.setCellValueFactory(new PropertyValueFactory<>("totalValue"));
+        TableColumn<ContractModel, BigDecimal> totalValueColumn = new TableColumn<>("Полная сумма");
+        totalValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
+                CurrencyUtil.toDecimal(features.getValue().getTotalValue())
+        ));
         contractTableView.getColumns().add(totalValueColumn);
 
-        TableColumn<ContractModel, Double> remainingValueColumn = new TableColumn<>("Остаток");
-        remainingValueColumn.setCellValueFactory(new PropertyValueFactory<>("remainingValue"));
+        TableColumn<ContractModel, BigDecimal> remainingValueColumn = new TableColumn<>("Остаток");
+        remainingValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
+                CurrencyUtil.toDecimal(features.getValue().getRemainingValue())
+        ));
         contractTableView.getColumns().add(remainingValueColumn);
     }
 
@@ -70,8 +78,10 @@ public class MainViewController implements Initializable {
         ));
         paymentTableView.getColumns().add(dateColumn);
 
-        TableColumn<PaymentModel, Double> paymentValueColumn = new TableColumn<>("Платеж");
-        paymentValueColumn.setCellValueFactory(new PropertyValueFactory<>("paymentValue"));
+        TableColumn<PaymentModel, BigDecimal> paymentValueColumn = new TableColumn<>("Платеж");
+        paymentValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
+                CurrencyUtil.toDecimal(features.getValue().getPaymentValue())
+        ));
         paymentTableView.getColumns().add(paymentValueColumn);
     }
 
@@ -83,9 +93,6 @@ public class MainViewController implements Initializable {
                 ))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         contractTableView.setItems(contracts);
-
-        contractTableView.getSelectionModel().selectedItemProperty()
-                .addListener((obs, oldVal, newVal) -> updatePaymentTable());
     }
 
     private void updatePaymentTable() {
@@ -120,8 +127,9 @@ public class MainViewController implements Initializable {
             return;
         }
         openUpsertPayment(selectedContract, null).setOnHiding(event -> {
+            int selectedIndex = contractTableView.getSelectionModel().getSelectedIndex();
             updateContractTable();
-            updatePaymentTable();
+            contractTableView.getSelectionModel().clearAndSelect(selectedIndex);
         });
     }
 
@@ -137,8 +145,9 @@ public class MainViewController implements Initializable {
             return;
         }
         openUpsertPayment(selectedContract, selectedPayment).setOnHiding(event -> {
+            int selectedIndex = contractTableView.getSelectionModel().getSelectedIndex();
             updateContractTable();
-            updatePaymentTable();
+            contractTableView.getSelectionModel().clearAndSelect(selectedIndex);
         });
     }
 }
