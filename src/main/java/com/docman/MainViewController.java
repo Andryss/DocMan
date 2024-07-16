@@ -68,7 +68,7 @@ public class MainViewController implements Initializable {
     }
 
     private void initContractTableColumns() {
-        TableColumn<ContractModel, String> numberColumn = new TableColumn<>("Номер договора");
+        TableColumn<ContractModel, String> numberColumn = new TableColumn<>("Номер");
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
         contractTableView.getColumns().add(numberColumn);
 
@@ -76,7 +76,7 @@ public class MainViewController implements Initializable {
         agentColumn.setCellValueFactory(new PropertyValueFactory<>("agent"));
         contractTableView.getColumns().add(agentColumn);
 
-        TableColumn<ContractModel, ?> datesSuperColumn = new TableColumn<>("Срок заключения договора");
+        TableColumn<ContractModel, ?> datesSuperColumn = new TableColumn<>("Срок договора");
 
         TableColumn<ContractModel, LocalDate> openDateColumn = new TableColumn<>("Дата заключения");
         openDateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
@@ -139,7 +139,7 @@ public class MainViewController implements Initializable {
         ));
         paymentTableView.getColumns().add(paymentValueColumn);
 
-        TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата произошла");
+        TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата проведена");
         paidColumn.setCellValueFactory(features -> features.getValue().paidProperty());
         paidColumn.setCellFactory(CheckBoxTableCell.forTableColumn(paidColumn));
         paymentTableView.getColumns().add(paidColumn);
