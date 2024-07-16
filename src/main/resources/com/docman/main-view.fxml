@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
+<HBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
    <children>
       <VBox>
          <children>
@@ -13,7 +13,7 @@
                   <Button mnemonicParsing="false" onAction="#onEditContract" text="Редактировать" />
                </children>
             </FlowPane>
-            <TableView fx:id="contractTableView" prefWidth="600.0" />
+            <TableView fx:id="contractTableView" />
          </children>
       </VBox>
       <VBox>

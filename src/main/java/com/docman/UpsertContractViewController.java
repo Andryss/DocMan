@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -30,6 +31,7 @@ public class UpsertContractViewController implements Initializable {
     private ContractModel editingContract;
 
     public TextField numberTextField;
+    public TextField agentTextField;
     public DatePicker openDatePicker;
     public DatePicker closeDatePicker;
     public TextField totalValueTextField;
@@ -38,6 +40,7 @@ public class UpsertContractViewController implements Initializable {
     public CheckBox threeDaysBeforeCheckbox;
     public CheckBox fiveDaysBeforeCheckbox;
     public CheckBox tenDaysBeforeCheckbox;
+    public TextArea noteTextArea;
 
     private Map<CheckBox, Long> checkboxesDaysTimeout;
 
@@ -75,6 +78,12 @@ public class UpsertContractViewController implements Initializable {
             return;
         }
 
+        String agent = agentTextField.getText().strip();
+        if (agent.isBlank()) {
+            showWarning("Контрагент не должен быть пустым");
+            return;
+        }
+
         LocalDate openDateValue = openDatePicker.getValue();
         if (openDateValue == null) {
             showWarning("Дата открытия не выбрана");
@@ -98,12 +107,16 @@ public class UpsertContractViewController implements Initializable {
             return;
         }
 
+        String note = noteTextArea.getText().strip();
+
         ContractEntity contract = new ContractEntity();
         contract.setNumber(number);
+        contract.setAgent(agent);
         contract.setOpenDate(openDate);
         contract.setCloseDate(closeDate);
         contract.setTotalValue(totalValue);
         contract.setRemainingValue(totalValue);
+        contract.setNote(note);
 
         if (editingContract != null) {
             contract.setId(editingContract.getId());

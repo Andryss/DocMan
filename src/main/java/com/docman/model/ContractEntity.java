@@ -21,8 +21,10 @@ public class ContractEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String number;
+    private String agent;
     private Instant openDate;
     private Instant closeDate;
     private long totalValue;
     private long remainingValue;
+    private String note;
 }

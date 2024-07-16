@@ -9,18 +9,31 @@ import java.time.Instant;
 public class ContractModel {
     private final Long id;
     private final SimpleStringProperty number;
+    private final SimpleStringProperty agent;
     private final SimpleObjectProperty<Instant> openDate;
     private final SimpleObjectProperty<Instant> closeDate;
     private final SimpleLongProperty totalValue;
     private final SimpleLongProperty remainingValue;
+    private final SimpleStringProperty note;
 
-    public ContractModel(Long id, String number, Instant openDate, Instant closeDate, long totalValue, long remainingValue) {
+    public ContractModel(
+            Long id,
+            String number,
+            String agent,
+            Instant openDate,
+            Instant closeDate,
+            long totalValue,
+            long remainingValue,
+            String note
+    ) {
         this.id = id;
         this.number = new SimpleStringProperty(number);
+        this.agent = new SimpleStringProperty(agent);
         this.openDate = new SimpleObjectProperty<>(openDate);
         this.closeDate = new SimpleObjectProperty<>(closeDate);
         this.totalValue = new SimpleLongProperty(totalValue);
         this.remainingValue = new SimpleLongProperty(remainingValue);
+        this.note = new SimpleStringProperty(note);
     }
 
     public Long getId() {
@@ -37,6 +50,18 @@ public class ContractModel {
 
     public void setNumber(String number) {
         this.number.set(number);
+    }
+
+    public String getAgent() {
+        return agent.get();
+    }
+
+    public SimpleStringProperty agentProperty() {
+        return agent;
+    }
+
+    public void setAgent(String agent) {
+        this.agent.set(agent);
     }
 
     public Instant getOpenDate() {
@@ -85,5 +110,17 @@ public class ContractModel {
 
     public void setRemainingValue(long remainingValue) {
         this.remainingValue.set(remainingValue);
+    }
+
+    public String getNote() {
+        return note.get();
+    }
+
+    public SimpleStringProperty noteProperty() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note.set(note);
     }
 }

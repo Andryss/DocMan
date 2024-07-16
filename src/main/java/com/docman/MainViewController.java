@@ -69,17 +69,25 @@ public class MainViewController implements Initializable {
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
         contractTableView.getColumns().add(numberColumn);
 
-        TableColumn<ContractModel, LocalDate> openDateColumn = new TableColumn<>("Дата открытия");
+        TableColumn<ContractModel, String> agentColumn = new TableColumn<>("Контрагент");
+        agentColumn.setCellValueFactory(new PropertyValueFactory<>("agent"));
+        contractTableView.getColumns().add(agentColumn);
+
+        TableColumn<ContractModel, ?> datesSuperColumn = new TableColumn<>("Срок заключения договора");
+
+        TableColumn<ContractModel, LocalDate> openDateColumn = new TableColumn<>("Дата заключения");
         openDateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
                 LocalDate.ofInstant(features.getValue().getOpenDate(), ZoneId.systemDefault())
         ));
-        contractTableView.getColumns().add(openDateColumn);
+        datesSuperColumn.getColumns().add(openDateColumn);
 
-        TableColumn<ContractModel, LocalDate> closeDateColumn = new TableColumn<>("Дата закрытия");
+        TableColumn<ContractModel, LocalDate> closeDateColumn = new TableColumn<>("Дата окончания");
         closeDateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
                 LocalDate.ofInstant(features.getValue().getCloseDate(), ZoneId.systemDefault())
         ));
-        contractTableView.getColumns().add(closeDateColumn);
+        datesSuperColumn.getColumns().add(closeDateColumn);
+
+        contractTableView.getColumns().add(datesSuperColumn);
 
         TableColumn<ContractModel, BigDecimal> totalValueColumn = new TableColumn<>("Полная сумма");
         totalValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
@@ -92,6 +100,10 @@ public class MainViewController implements Initializable {
                 CurrencyUtil.toDecimal(features.getValue().getRemainingValue())
         ));
         contractTableView.getColumns().add(remainingValueColumn);
+
+        TableColumn<ContractModel, String> noteColumn = new TableColumn<>("Примечание");
+        noteColumn.setCellValueFactory(new PropertyValueFactory<>("note"));
+        contractTableView.getColumns().add(noteColumn);
     }
 
     private void initPaymentTableColumns() {
@@ -101,7 +113,7 @@ public class MainViewController implements Initializable {
         ));
         paymentTableView.getColumns().add(dateColumn);
 
-        TableColumn<PaymentModel, BigDecimal> paymentValueColumn = new TableColumn<>("Платеж");
+        TableColumn<PaymentModel, BigDecimal> paymentValueColumn = new TableColumn<>("Сумма платежа");
         paymentValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
                 CurrencyUtil.toDecimal(features.getValue().getPaymentValue())
         ));
@@ -111,8 +123,8 @@ public class MainViewController implements Initializable {
     private void updateContractTable() {
         ObservableList<ContractModel> contracts = contractRepository.findAll().stream()
                 .map(e -> new ContractModel(
-                        e.getId(), e.getNumber(), e.getOpenDate(),
-                        e.getCloseDate(), e.getTotalValue(), e.getRemainingValue()
+                        e.getId(), e.getNumber(), e.getAgent(), e.getOpenDate(), e.getCloseDate(),
+                        e.getTotalValue(), e.getRemainingValue(), e.getNote()
                 ))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         contractTableView.setItems(contracts);
