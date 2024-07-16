@@ -122,10 +122,6 @@ public class UpsertContractViewController implements Initializable {
             contract.setId(editingContract.getId());
             long paid = editingContract.getTotalValue() - editingContract.getRemainingValue();
             long newRemaining = totalValue - paid;
-            if (newRemaining < 0) {
-                showWarning(String.format("Полная стоимость должна быть больше, чем уже оплаченная сумма (%s)", CurrencyUtil.toDecimal(paid)));
-                return;
-            }
             contract.setRemainingValue(newRemaining);
             contractRepository.update(contract);
         } else {

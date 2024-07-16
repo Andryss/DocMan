@@ -27,4 +27,16 @@ public class PaymentRepository extends AbstractRepository {
     public void update(PaymentEntity payment) {
         executeInTransaction(session -> session.update(payment));
     }
+
+    public void setPaid(long id, boolean paid) {
+        executeInTransaction(session -> {
+            //noinspection rawtypes
+            Query query = session.createQuery(
+                    "update from PaymentEntity p set p.paid = :paid where p.id = :id"
+            );
+            query.setParameter("id", id);
+            query.setParameter("paid", paid);
+            query.executeUpdate();
+        });
+    }
 }

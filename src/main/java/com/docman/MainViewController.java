@@ -9,8 +9,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.math.BigDecimal;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.docman.AlertUtil.showWarning;
 import static com.docman.ScreenUtil.openUpsertContract;
 import static com.docman.ScreenUtil.openUpsertPayment;
+import static java.math.BigDecimal.ZERO;
 
 public class MainViewController implements Initializable {
     private final ContractRepository contractRepository = ContractRepository.INSTANCE;
@@ -99,6 +102,23 @@ public class MainViewController implements Initializable {
         remainingValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
                 CurrencyUtil.toDecimal(features.getValue().getRemainingValue())
         ));
+        remainingValueColumn.setCellFactory(column -> new TableCell<>(){
+            @Override
+            protected void updateItem(BigDecimal item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item.toString());
+                    if (item.compareTo(ZERO) < 0) {
+                        setStyle("-fx-text-fill: red");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
         contractTableView.getColumns().add(remainingValueColumn);
 
         TableColumn<ContractModel, String> noteColumn = new TableColumn<>("Примечание");
@@ -118,6 +138,13 @@ public class MainViewController implements Initializable {
                 CurrencyUtil.toDecimal(features.getValue().getPaymentValue())
         ));
         paymentTableView.getColumns().add(paymentValueColumn);
+
+        TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата произошла");
+        paidColumn.setCellValueFactory(features -> features.getValue().paidProperty());
+        paidColumn.setCellFactory(CheckBoxTableCell.forTableColumn(paidColumn));
+        paymentTableView.getColumns().add(paidColumn);
+
+        paymentTableView.setEditable(true);
     }
 
     private void updateContractTable() {
@@ -130,6 +157,12 @@ public class MainViewController implements Initializable {
         contractTableView.setItems(contracts);
     }
 
+    private void updateContractTableWithSavedSelection() {
+        int selectedIndex = contractTableView.getSelectionModel().getSelectedIndex();
+        updateContractTable();
+        contractTableView.getSelectionModel().clearAndSelect(selectedIndex);
+    }
+
     private void updatePaymentTable() {
         ContractModel selectedContract = contractTableView.getSelectionModel().getSelectedItem();
         if (selectedContract == null) {
@@ -137,8 +170,13 @@ public class MainViewController implements Initializable {
             return;
         }
         ObservableList<PaymentModel> payments = paymentRepository.findAllByContractId(selectedContract.getId()).stream()
-                .map(e -> new PaymentModel(e.getId(), e.getDate(), e.getPaymentValue()))
+                .map(e -> new PaymentModel(e.getId(), e.getContractId(), e.getDate(), e.getPaymentValue(), e.isPaid()))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        payments.forEach(payment -> payment.paidProperty().addListener((obs, oldVal, newVal) -> {
+            paymentRepository.setPaid(payment.getId(), newVal);
+            contractRepository.updateByIdChangeRemainingValue(payment.getContractId(), payment.getPaymentValue(), newVal);
+            updateContractTableWithSavedSelection();
+        }));
         paymentTableView.setItems(payments);
     }
 
@@ -161,11 +199,8 @@ public class MainViewController implements Initializable {
             showWarning("Сначала нужно выбрать контракт");
             return;
         }
-        openUpsertPayment(selectedContract, null).setOnHiding(event -> {
-            int selectedIndex = contractTableView.getSelectionModel().getSelectedIndex();
-            updateContractTable();
-            contractTableView.getSelectionModel().clearAndSelect(selectedIndex);
-        });
+        openUpsertPayment(selectedContract, null)
+                .setOnHiding(event -> updateContractTableWithSavedSelection());
     }
 
     public void onEditPayment() {
@@ -179,10 +214,7 @@ public class MainViewController implements Initializable {
             showWarning("Оплата для редактирования не выбрана");
             return;
         }
-        openUpsertPayment(selectedContract, selectedPayment).setOnHiding(event -> {
-            int selectedIndex = contractTableView.getSelectionModel().getSelectedIndex();
-            updateContractTable();
-            contractTableView.getSelectionModel().clearAndSelect(selectedIndex);
-        });
+        openUpsertPayment(selectedContract, selectedPayment)
+                .setOnHiding(event -> updateContractTableWithSavedSelection());
     }
 }

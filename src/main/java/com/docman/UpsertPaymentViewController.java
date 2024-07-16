@@ -60,22 +60,14 @@ public class UpsertPaymentViewController {
 
         if (editingPayment != null) {
             payment.setId(editingPayment.getId());
-            long remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
-            long newRemaining = remainingWithoutPayment - paymentValue;
-            if (newRemaining < 0) {
-                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", CurrencyUtil.toDecimal(remainingWithoutPayment)));
-                return;
+            payment.setPaid(editingPayment.isPaid());
+            if (editingPayment.isPaid()) {
+                long remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
+                long newRemaining = remainingWithoutPayment - paymentValue;
+                contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             }
-            contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             paymentRepository.update(payment);
         } else {
-            long remaining = contract.getRemainingValue();
-            long newRemaining = remaining - paymentValue;
-            if (newRemaining < 0) {
-                showWarning(String.format("Максимальный размер платежа не должен превышать остатка по договору (%s)", CurrencyUtil.toDecimal(remaining)));
-                return;
-            }
-            contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
             paymentRepository.save(payment);
         }
 

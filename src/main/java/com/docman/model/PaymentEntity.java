@@ -23,4 +23,5 @@ public class PaymentEntity {
     private long contractId;
     private Instant date;
     private long paymentValue;
+    private boolean paid;
 }
