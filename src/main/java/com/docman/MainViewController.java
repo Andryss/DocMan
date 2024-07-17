@@ -11,9 +11,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
@@ -154,6 +161,46 @@ public class MainViewController implements Initializable {
         });
         contractTableView.getColumns().add(remainingValueColumn);
 
+        TableColumn<ContractModel, String> fileColumn = new TableColumn<>("Файл");
+        fileColumn.setCellValueFactory(features -> features.getValue().filePathProperty());
+        fileColumn.setCellFactory(column -> new TableCell<>(){
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    File file = new File(item);
+                    if (!file.exists() || file.isDirectory()) {
+                        Button button = new Button();
+                        button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                        FontIcon icon = new FontIcon("mdi2a-alert");
+                        icon.setIconSize(16);
+                        button.setGraphic(icon);
+                        button.setOnAction(event -> AlertUtil.showWarning(String.format("Файл %s не найден", item)));
+                        setGraphic(button);
+                        return;
+                    }
+                    Button button = new Button();
+                    button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    FontIcon icon = new FontIcon("mdi2f-file");
+                    icon.setIconSize(16);
+                    button.setGraphic(icon);
+                    button.setOnAction(event -> {
+                        if (Desktop.isDesktopSupported()) {
+                            try {
+                                Desktop.getDesktop().open(file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    setGraphic(button);
+                }
+            }
+        });
+        contractTableView.getColumns().add(fileColumn);
+
         TableColumn<ContractModel, String> noteColumn = new TableColumn<>("Примечание");
         noteColumn.setCellValueFactory(new PropertyValueFactory<>("note"));
         contractTableView.getColumns().add(noteColumn);
@@ -184,7 +231,7 @@ public class MainViewController implements Initializable {
         fetchedContracts = contractRepository.findAll().stream()
                 .map(e -> new ContractModel(
                         e.getId(), e.getNumber(), e.getAgent(), e.getOpenDate(), e.getCloseDate(),
-                        e.getTotalValue(), e.getRemainingValue(), e.getNote()
+                        e.getTotalValue(), e.getRemainingValue(), e.getFilePath(), e.getNote()
                 ))
                 .collect(Collectors.toList());
         filterContractTable();
@@ -198,10 +245,13 @@ public class MainViewController implements Initializable {
             ObservableList<ContractModel> filteredContracts = FXCollections.observableArrayList();
             fetchedContracts.stream()
                     .filter(contract -> contract.getNumber().toLowerCase().contains(filter) ||
-                            contract.getAgent().toLowerCase().contains(filter))
-                    .forEach(filteredContracts::add);
-            fetchedContracts.stream()
-                    .filter(contract -> contract.getNote().toLowerCase().contains(filter))
+                            contract.getAgent().toLowerCase().contains(filter) ||
+                            contract.getOpenDate().toString().contains(filter) ||
+                            contract.getCloseDate().toString().contains(filter) ||
+                            String.valueOf(contract.getTotalValue()).contains(filter) ||
+                            String.valueOf(contract.getRemainingValue()).contains(filter) ||
+                            contract.getFilePath().contains(filter) ||
+                            contract.getNote().contains(filter))
                     .forEach(filteredContracts::add);
             contractTableView.setItems(filteredContracts);
         }

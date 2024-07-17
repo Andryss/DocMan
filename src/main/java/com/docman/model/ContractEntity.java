@@ -26,5 +26,6 @@ public class ContractEntity {
     private Instant closeDate;
     private long totalValue;
     private long remainingValue;
+    private String filePath;
     private String note;
 }

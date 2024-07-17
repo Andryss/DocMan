@@ -12,14 +12,18 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.docman.AlertUtil.showWarning;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -40,6 +44,7 @@ public class UpsertContractViewController implements Initializable {
     public CheckBox threeDaysBeforeCheckbox;
     public CheckBox fiveDaysBeforeCheckbox;
     public CheckBox tenDaysBeforeCheckbox;
+    public TextField filePathTextField;
     public TextArea noteTextArea;
 
     private Map<CheckBox, Long> checkboxesDaysTimeout;
@@ -113,6 +118,9 @@ public class UpsertContractViewController implements Initializable {
             return;
         }
 
+        String filePathValue = filePathTextField.getText().strip();
+        String filePath = (filePathValue.isEmpty() ? null : filePathValue);
+
         String note = noteTextArea.getText().strip();
 
         ContractEntity contract = new ContractEntity();
@@ -122,6 +130,7 @@ public class UpsertContractViewController implements Initializable {
         contract.setCloseDate(closeDate);
         contract.setTotalValue(totalValue);
         contract.setRemainingValue(totalValue);
+        contract.setFilePath(filePath);
         contract.setNote(note);
 
         if (editingContract != null) {
@@ -162,5 +171,12 @@ public class UpsertContractViewController implements Initializable {
 
     private void closeWindow(ActionEvent event) {
         ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+    }
+
+    public void onChooseFile(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+        if (file == null) return;
+        filePathTextField.setText(file.getAbsolutePath());
     }
 }

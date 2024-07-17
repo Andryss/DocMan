@@ -16,6 +16,7 @@ public class ContractModel {
     private final SimpleObjectProperty<LocalDate> closeDate;
     private final SimpleLongProperty totalValue;
     private final SimpleLongProperty remainingValue;
+    private final SimpleStringProperty filePath;
     private final SimpleStringProperty note;
 
     public ContractModel(
@@ -26,6 +27,7 @@ public class ContractModel {
             Instant closeDate,
             long totalValue,
             long remainingValue,
+            String filePath,
             String note
     ) {
         this.id = id;
@@ -35,6 +37,7 @@ public class ContractModel {
         this.closeDate = new SimpleObjectProperty<>(DateUtil.toLocalDate(closeDate));
         this.totalValue = new SimpleLongProperty(totalValue);
         this.remainingValue = new SimpleLongProperty(remainingValue);
+        this.filePath = new SimpleStringProperty(filePath);
         this.note = new SimpleStringProperty(note);
     }
 
@@ -112,6 +115,18 @@ public class ContractModel {
 
     public void setRemainingValue(long remainingValue) {
         this.remainingValue.set(remainingValue);
+    }
+
+    public String getFilePath() {
+        return filePath.get();
+    }
+
+    public SimpleStringProperty filePathProperty() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath.set(filePath);
     }
 
     public String getNote() {

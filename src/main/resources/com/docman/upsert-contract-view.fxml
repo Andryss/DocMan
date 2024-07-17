@@ -17,6 +17,7 @@
           <RowConstraints vgrow="SOMETIMES" />
             <RowConstraints vgrow="SOMETIMES" />
             <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
@@ -40,8 +41,17 @@
                   <CheckBox fx:id="tenDaysBeforeCheckbox" mnemonicParsing="false" text="За 10 дней" />
                </children>
             </VBox>
-            <Label text="Примечание" GridPane.rowIndex="6" />
-            <TextArea fx:id="noteTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label text="Файл договора" GridPane.rowIndex="6" />
+            <BorderPane GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <center>
+                  <TextField fx:id="filePathTextField" editable="false" BorderPane.alignment="CENTER" />
+               </center>
+               <right>
+                  <Button mnemonicParsing="false" onAction="#onChooseFile" text="Загрузить" BorderPane.alignment="CENTER" />
+               </right>
+            </BorderPane>
+            <Label text="Примечание" GridPane.rowIndex="7" />
+            <TextArea fx:id="noteTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
          </children>
       </GridPane>
    </center>
