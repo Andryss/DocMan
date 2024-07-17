@@ -22,6 +22,7 @@ public class SessionFactoryHolder {
                                     .applySettings(configuration.getProperties())
                                     .build()
                     );
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> sessionFactory.close()));
         }
         return sessionFactory;
     }

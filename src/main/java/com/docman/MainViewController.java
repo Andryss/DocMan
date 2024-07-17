@@ -9,9 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -21,10 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +35,9 @@ public class MainViewController implements Initializable {
 
     public TableView<ContractModel> contractTableView;
     public TableView<PaymentModel> paymentTableView;
+    public TextField filterTextField;
+
+    private List<ContractModel> fetchedContracts = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,6 +48,26 @@ public class MainViewController implements Initializable {
                 .addListener((obs, oldVal, newVal) -> updatePaymentTable());
 
         updateContractTable();
+
+        filterTextField.textProperty().addListener((obs, oldVal, newVal) -> filterContractTable());
+
+        contractTableView.setRowFactory(table -> {
+            TableRow<ContractModel> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 2) openUpsertContract(row.getItem());
+            });
+            return row;
+        });
+
+        paymentTableView.setRowFactory(table -> {
+            TableRow<PaymentModel> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 2) {
+                    openUpsertPayment(contractTableView.getSelectionModel().getSelectedItem(), row.getItem());
+                }
+            });
+            return row;
+        });
     }
 
     public void onShown() {
@@ -59,7 +77,8 @@ public class MainViewController implements Initializable {
         notificationRepository.findAllNotShownByTimeoutBefore(Instant.now()).forEach(notification -> {
             ContractModel contract = contractsMap.get(notification.getContractId());
             Duration duration = Duration.between(notification.getTimeout(), contract.getCloseDate());
-            AlertUtil.showNotification(contract.getNumber(), contract.getCloseDate(), duration.toDays());
+            AlertUtil.showNotification(contract.getNumber(), contract.getAgent(),
+                    contract.getCloseDate(), duration.toDays());
             shownIds.add(notification.getId());
         });
         if (!shownIds.isEmpty()) {
@@ -69,25 +88,21 @@ public class MainViewController implements Initializable {
 
     private void initContractTableColumns() {
         TableColumn<ContractModel, String> numberColumn = new TableColumn<>("Номер");
-        numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
+        numberColumn.setCellValueFactory(features -> features.getValue().numberProperty());
         contractTableView.getColumns().add(numberColumn);
 
         TableColumn<ContractModel, String> agentColumn = new TableColumn<>("Контрагент");
-        agentColumn.setCellValueFactory(new PropertyValueFactory<>("agent"));
+        agentColumn.setCellValueFactory(features -> features.getValue().agentProperty());
         contractTableView.getColumns().add(agentColumn);
 
         TableColumn<ContractModel, ?> datesSuperColumn = new TableColumn<>("Срок договора");
 
         TableColumn<ContractModel, LocalDate> openDateColumn = new TableColumn<>("Дата заключения");
-        openDateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                LocalDate.ofInstant(features.getValue().getOpenDate(), ZoneId.systemDefault())
-        ));
+        openDateColumn.setCellValueFactory(features -> features.getValue().openDateProperty());
         datesSuperColumn.getColumns().add(openDateColumn);
 
         TableColumn<ContractModel, LocalDate> closeDateColumn = new TableColumn<>("Дата окончания");
-        closeDateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                LocalDate.ofInstant(features.getValue().getCloseDate(), ZoneId.systemDefault())
-        ));
+        closeDateColumn.setCellValueFactory(features -> features.getValue().closeDateProperty());
         datesSuperColumn.getColumns().add(closeDateColumn);
 
         contractTableView.getColumns().add(datesSuperColumn);
@@ -129,7 +144,7 @@ public class MainViewController implements Initializable {
     private void initPaymentTableColumns() {
         TableColumn<PaymentModel, LocalDate> dateColumn = new TableColumn<>("Дата платежа");
         dateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                LocalDate.ofInstant(features.getValue().getDate(), ZoneId.systemDefault())
+                DateUtil.toLocalDate(features.getValue().getDate())
         ));
         paymentTableView.getColumns().add(dateColumn);
 
@@ -141,20 +156,37 @@ public class MainViewController implements Initializable {
 
         TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата проведена");
         paidColumn.setCellValueFactory(features -> features.getValue().paidProperty());
-        paidColumn.setCellFactory(CheckBoxTableCell.forTableColumn(paidColumn));
+        paidColumn.setCellFactory(column -> new CheckBoxTableCell<>());
         paymentTableView.getColumns().add(paidColumn);
 
         paymentTableView.setEditable(true);
     }
 
     private void updateContractTable() {
-        ObservableList<ContractModel> contracts = contractRepository.findAll().stream()
+        fetchedContracts = contractRepository.findAll().stream()
                 .map(e -> new ContractModel(
                         e.getId(), e.getNumber(), e.getAgent(), e.getOpenDate(), e.getCloseDate(),
                         e.getTotalValue(), e.getRemainingValue(), e.getNote()
                 ))
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-        contractTableView.setItems(contracts);
+                .collect(Collectors.toList());
+        filterContractTable();
+    }
+
+    private void filterContractTable() {
+        String filter = filterTextField.getText().strip().toLowerCase();
+        if (filter.isBlank()) {
+            contractTableView.setItems(FXCollections.observableList(fetchedContracts));
+        } else {
+            ObservableList<ContractModel> filteredContracts = FXCollections.observableArrayList();
+            fetchedContracts.stream()
+                    .filter(contract -> contract.getNumber().toLowerCase().contains(filter) ||
+                            contract.getAgent().toLowerCase().contains(filter))
+                    .forEach(filteredContracts::add);
+            fetchedContracts.stream()
+                    .filter(contract -> contract.getNote().toLowerCase().contains(filter))
+                    .forEach(filteredContracts::add);
+            contractTableView.setItems(filteredContracts);
+        }
     }
 
     private void updateContractTableWithSavedSelection() {

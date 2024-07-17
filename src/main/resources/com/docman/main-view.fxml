@@ -3,29 +3,40 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
-   <children>
-      <VBox>
-         <children>
-            <FlowPane>
+<SplitPane dividerPositions="0.7" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.MainViewController">
+   <items>
+      <BorderPane>
+         <center>
+            <TableView fx:id="contractTableView">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy></TableView>
+         </center>
+         <top>
+            <FlowPane BorderPane.alignment="CENTER">
                <children>
+                  <TextField fx:id="filterTextField" promptText="Поиск ..." />
                   <Button mnemonicParsing="false" onAction="#onAddContract" text="Добавить" />
                   <Button mnemonicParsing="false" onAction="#onEditContract" text="Редактировать" />
                </children>
             </FlowPane>
-            <TableView fx:id="contractTableView" />
-         </children>
-      </VBox>
-      <VBox>
-         <children>
-            <FlowPane>
+         </top>
+      </BorderPane>
+      <BorderPane>
+         <center>
+            <TableView fx:id="paymentTableView">
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy></TableView>
+         </center>
+         <top>
+            <FlowPane BorderPane.alignment="CENTER">
                <children>
                   <Button mnemonicParsing="false" onAction="#onAddPayment" text="Добавить" />
                   <Button mnemonicParsing="false" onAction="#onEditPayment" text="Редактировать" />
                </children>
             </FlowPane>
-            <TableView fx:id="paymentTableView" />
-         </children>
-      </VBox>
-   </children>
-</HBox>
+         </top>
+      </BorderPane>
+   </items>
+</SplitPane>

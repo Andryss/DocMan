@@ -59,16 +59,22 @@ public class UpsertContractViewController implements Initializable {
         if (template == null) return;
         editingContract = template;
         numberTextField.setText(template.getNumber());
-        openDatePicker.setValue(LocalDate.ofInstant(template.getOpenDate(), ZoneId.systemDefault()));
-        closeDatePicker.setValue(LocalDate.ofInstant(template.getCloseDate(), ZoneId.systemDefault()));
+        agentTextField.setText(template.getAgent());
+        openDatePicker.setValue(template.getOpenDate());
+        closeDatePicker.setValue(template.getCloseDate());
         totalValueTextField.setText(CurrencyUtil.toDecimal(template.getTotalValue()).toString());
 
         notificationRepository.findAllByContractId(template.getId()).forEach(notification -> {
-            long duration = Duration.between(notification.getTimeout(), template.getCloseDate()).toDays();
+            long duration = Duration.between(
+                    notification.getTimeout(),
+                    DateUtil.toInstant(template.getCloseDate())
+            ).toDays();
             checkboxesDaysTimeout.forEach((checkBox, days) -> {
                 if (duration == days) checkBox.setSelected(true);
             });
         });
+
+        noteTextArea.setText(template.getNote());
     }
 
     public void onSave(ActionEvent event) {
@@ -89,14 +95,14 @@ public class UpsertContractViewController implements Initializable {
             showWarning("Дата открытия не выбрана");
             return;
         }
-        Instant openDate = openDateValue.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant openDate = DateUtil.toInstant(openDateValue);
 
         LocalDate closeDateValue = closeDatePicker.getValue();
         if (closeDateValue == null) {
             showWarning("Дата закрытия не выбрана");
             return;
         }
-        Instant closeDate = closeDateValue.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant closeDate = DateUtil.toInstant(closeDateValue);
 
         long totalValue;
         try {

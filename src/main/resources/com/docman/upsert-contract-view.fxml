@@ -3,8 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.UpsertContractViewController">
-   <children>
+<BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.docman.UpsertContractViewController">
+   <center>
       <GridPane alignment="TOP_CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" />
@@ -21,12 +21,14 @@
         </rowConstraints>
          <children>
             <Label text="Номер договора" />
-            <Label text="Дата заключения" GridPane.rowIndex="2" />
-            <Label text="Дата окончания" GridPane.rowIndex="3" />
-            <Label text="Полная сумма" GridPane.rowIndex="4" />
             <TextField fx:id="numberTextField" GridPane.columnIndex="1" />
+            <Label text="Контрагент" GridPane.rowIndex="1" />
+            <TextField fx:id="agentTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Дата заключения" GridPane.rowIndex="2" />
             <DatePicker fx:id="openDatePicker" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Дата окончания" GridPane.rowIndex="3" />
             <DatePicker fx:id="closeDatePicker" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Полная сумма" GridPane.rowIndex="4" />
             <TextField fx:id="totalValueTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Label text="Уведомления" GridPane.rowIndex="5" />
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="5">
@@ -38,17 +40,17 @@
                   <CheckBox fx:id="tenDaysBeforeCheckbox" mnemonicParsing="false" text="За 10 дней" />
                </children>
             </VBox>
-            <Label text="Контрагент" GridPane.rowIndex="1" />
-            <TextField fx:id="agentTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label text="Примечание" GridPane.rowIndex="6" />
             <TextArea fx:id="noteTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
          </children>
       </GridPane>
-      <HBox alignment="CENTER">
+   </center>
+   <bottom>
+      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
             <Button mnemonicParsing="false" onAction="#onSave" prefWidth="80.0" text="Сохранить" />
             <Button mnemonicParsing="false" onAction="#onCancel" prefWidth="80.0" text="Отмена" />
          </children>
       </HBox>
-   </children>
-</VBox>
+   </bottom>
+</BorderPane>

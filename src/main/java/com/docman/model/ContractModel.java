@@ -1,17 +1,19 @@
 package com.docman.model;
 
+import com.docman.DateUtil;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class ContractModel {
     private final Long id;
     private final SimpleStringProperty number;
     private final SimpleStringProperty agent;
-    private final SimpleObjectProperty<Instant> openDate;
-    private final SimpleObjectProperty<Instant> closeDate;
+    private final SimpleObjectProperty<LocalDate> openDate;
+    private final SimpleObjectProperty<LocalDate> closeDate;
     private final SimpleLongProperty totalValue;
     private final SimpleLongProperty remainingValue;
     private final SimpleStringProperty note;
@@ -29,8 +31,8 @@ public class ContractModel {
         this.id = id;
         this.number = new SimpleStringProperty(number);
         this.agent = new SimpleStringProperty(agent);
-        this.openDate = new SimpleObjectProperty<>(openDate);
-        this.closeDate = new SimpleObjectProperty<>(closeDate);
+        this.openDate = new SimpleObjectProperty<>(DateUtil.toLocalDate(openDate));
+        this.closeDate = new SimpleObjectProperty<>(DateUtil.toLocalDate(closeDate));
         this.totalValue = new SimpleLongProperty(totalValue);
         this.remainingValue = new SimpleLongProperty(remainingValue);
         this.note = new SimpleStringProperty(note);
@@ -64,27 +66,27 @@ public class ContractModel {
         this.agent.set(agent);
     }
 
-    public Instant getOpenDate() {
+    public LocalDate getOpenDate() {
         return openDate.get();
     }
 
-    public SimpleObjectProperty<Instant> openDateProperty() {
+    public SimpleObjectProperty<LocalDate> openDateProperty() {
         return openDate;
     }
 
-    public void setOpenDate(Instant openDate) {
+    public void setOpenDate(LocalDate openDate) {
         this.openDate.set(openDate);
     }
 
-    public Instant getCloseDate() {
+    public LocalDate getCloseDate() {
         return closeDate.get();
     }
 
-    public SimpleObjectProperty<Instant> closeDateProperty() {
+    public SimpleObjectProperty<LocalDate> closeDateProperty() {
         return closeDate;
     }
 
-    public void setCloseDate(Instant closeDate) {
+    public void setCloseDate(LocalDate closeDate) {
         this.closeDate.set(closeDate);
     }
 

@@ -31,7 +31,7 @@ public class UpsertPaymentViewController {
         contract = contractModel;
         if (template != null) {
             editingPayment = template;
-            datePicker.setValue(LocalDate.ofInstant(template.getDate(), ZoneId.systemDefault()));
+            datePicker.setValue(DateUtil.toLocalDate(template.getDate()));
             paymentValueTextField.setText(CurrencyUtil.toDecimal(template.getPaymentValue()).toString());
         }
     }

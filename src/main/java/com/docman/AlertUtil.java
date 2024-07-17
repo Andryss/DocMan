@@ -6,6 +6,7 @@ import javafx.scene.control.Alert.AlertType;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 
 import static javafx.scene.control.Alert.AlertType.INFORMATION;
 import static javafx.scene.control.Alert.AlertType.WARNING;
@@ -15,11 +16,10 @@ public class AlertUtil {
         doShow(WARNING, "Ошибка", content);
     }
 
-    public static void showNotification(String contractNumber, Instant closeDate, long days) {
-        LocalDate date = LocalDate.ofInstant(closeDate, ZoneId.systemDefault());
+    public static void showNotification(String contractNumber, String contractAgent, LocalDate closeDate, long days) {
         doShow(INFORMATION, "Уведомление", String.format(
-                "Контракт номер %s заканчивается через %s дня(ей) (дата окончания %s)",
-                contractNumber, days, date
+                "Контракт номер %s контрагент %s заканчивается через %s дня(ей) (дата окончания %s)",
+                contractNumber, contractAgent, days, closeDate
         ));
     }
 
