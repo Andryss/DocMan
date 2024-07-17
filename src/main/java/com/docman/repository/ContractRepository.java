@@ -22,27 +22,14 @@ public class ContractRepository extends AbstractRepository {
         executeInTransaction(session -> session.update(contract));
     }
 
-    public void updateByIdSetRemainingValue(Long id, long newRemaining) {
+    public void updateByIdAddRemainingValue(long id, long add) {
         executeInTransaction(session -> {
             //noinspection rawtypes
             Query query = session.createQuery(
-                    "update ContractEntity c set c.remainingValue = :newRemaining where c.id = :id"
+                    "update from ContractEntity c set c.remainingValue = c.remainingValue + :add where c.id = :id"
             );
-            query.setParameter("newRemaining", newRemaining);
             query.setParameter("id", id);
-            query.executeUpdate();
-        });
-    }
-
-    public void updateByIdChangeRemainingValue(long id, long change, boolean isMinus) {
-        executeInTransaction(session -> {
-            //noinspection rawtypes
-            Query query = session.createQuery(String.format(
-                    "update from ContractEntity c set c.remainingValue = c.remainingValue %s :change where c.id = :id",
-                    (isMinus ? "-" : "+")
-            ));
-            query.setParameter("id", id);
-            query.setParameter("change", change);
+            query.setParameter("add", add);
             query.executeUpdate();
         });
     }

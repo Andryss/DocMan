@@ -62,9 +62,8 @@ public class UpsertPaymentViewController {
             payment.setId(editingPayment.getId());
             payment.setPaid(editingPayment.isPaid());
             if (editingPayment.isPaid()) {
-                long remainingWithoutPayment = contract.getRemainingValue() + editingPayment.getPaymentValue();
-                long newRemaining = remainingWithoutPayment - paymentValue;
-                contractRepository.updateByIdSetRemainingValue(contract.getId(), newRemaining);
+                long add = editingPayment.getPaymentValue() - paymentValue;
+                contractRepository.updateByIdAddRemainingValue(contract.getId(), add);
             }
             paymentRepository.update(payment);
         } else {

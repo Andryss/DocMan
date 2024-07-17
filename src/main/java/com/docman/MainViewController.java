@@ -1,6 +1,7 @@
 package com.docman;
 
 import com.docman.model.ContractModel;
+import com.docman.model.NotificationEntity;
 import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.NotificationRepository;
@@ -18,8 +19,10 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -74,12 +77,27 @@ public class MainViewController implements Initializable {
         Map<Long, ContractModel> contractsMap = contractTableView.getItems().stream()
                 .collect(Collectors.toMap(ContractModel::getId, Function.identity()));
         List<Long> shownIds = new ArrayList<>();
-        notificationRepository.findAllNotShownByTimeoutBefore(Instant.now()).forEach(notification -> {
-            ContractModel contract = contractsMap.get(notification.getContractId());
-            Duration duration = Duration.between(notification.getTimeout(), contract.getCloseDate());
-            AlertUtil.showNotification(contract.getNumber(), contract.getAgent(),
-                    contract.getCloseDate(), duration.toDays());
-            shownIds.add(notification.getId());
+        List<NotificationEntity> batch = new ArrayList<>();
+        notificationRepository.findAllNotShownByTimeoutBefore(Instant.now()).forEach(n -> {
+            batch.add(n);
+            if (batch.size() == 10) {
+                StringBuilder builder = new StringBuilder();
+                batch.forEach(notification -> {
+                    ContractModel contract = contractsMap.get(notification.getContractId());
+                    Duration duration = Duration.between(
+                            notification.getTimeout(),
+                            DateUtil.toInstant(contract.getCloseDate())
+                    );
+                    builder.append(shownIds.size() + 1).append(") Контракт номер ").append(contract.getNumber())
+                            .append(" контрагент ").append(contract.getAgent()).append(" заканчивается через ")
+                            .append(duration.toDays()).append(" дня(ей) (дата окончания ")
+                            .append(contract.getCloseDate()).append(")\n");
+                    shownIds.add(notification.getId());
+                });
+                builder.setLength(builder.length() - 1);
+                AlertUtil.showNotification(builder.toString());
+                batch.clear();
+            }
         });
         if (!shownIds.isEmpty()) {
             notificationRepository.setShownByIds(shownIds);
@@ -206,7 +224,8 @@ public class MainViewController implements Initializable {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         payments.forEach(payment -> payment.paidProperty().addListener((obs, oldVal, newVal) -> {
             paymentRepository.setPaid(payment.getId(), newVal);
-            contractRepository.updateByIdChangeRemainingValue(payment.getContractId(), payment.getPaymentValue(), newVal);
+            long add = (newVal ? -payment.getPaymentValue() : payment.getPaymentValue());
+            contractRepository.updateByIdAddRemainingValue(payment.getContractId(), add);
             updateContractTableWithSavedSelection();
         }));
         paymentTableView.setItems(payments);
