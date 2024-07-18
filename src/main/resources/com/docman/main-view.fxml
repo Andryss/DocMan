@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -13,12 +14,18 @@
                </columnResizePolicy></TableView>
          </center>
          <top>
-            <FlowPane BorderPane.alignment="CENTER">
+            <FlowPane hgap="10.0" vgap="10.0" BorderPane.alignment="CENTER">
                <children>
                   <TextField fx:id="filterTextField" promptText="Поиск ..." />
                   <Button mnemonicParsing="false" onAction="#onAddContract" text="Добавить" />
                   <Button mnemonicParsing="false" onAction="#onEditContract" text="Редактировать" />
                </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
             </FlowPane>
          </top>
       </BorderPane>
@@ -30,11 +37,14 @@
                </columnResizePolicy></TableView>
          </center>
          <top>
-            <FlowPane BorderPane.alignment="CENTER">
+            <FlowPane hgap="10.0" vgap="10.0" BorderPane.alignment="CENTER">
                <children>
                   <Button mnemonicParsing="false" onAction="#onAddPayment" text="Добавить" />
                   <Button mnemonicParsing="false" onAction="#onEditPayment" text="Редактировать" />
                </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
             </FlowPane>
          </top>
       </BorderPane>

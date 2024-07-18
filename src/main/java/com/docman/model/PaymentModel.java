@@ -12,18 +12,18 @@ import java.time.LocalDate;
 public class PaymentModel {
     private final Long id;
     private final long contractId;
-    private final SimpleObjectProperty<LocalDate> date;
-    private final SimpleObjectProperty<BigDecimal> paymentValue;
+    private final SimpleObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<BigDecimal> paymentValue = new SimpleObjectProperty<>();
     private final long paymentValueLong;
-    private final SimpleBooleanProperty paid;
+    private final SimpleBooleanProperty paid = new SimpleBooleanProperty();
 
     public PaymentModel(Long id, long contractId, Instant date, long paymentValue, boolean paid) {
         this.id = id;
         this.contractId = contractId;
-        this.date = new SimpleObjectProperty<>(DateUtil.toLocalDate(date));
-        this.paymentValue = new SimpleObjectProperty<>(CurrencyUtil.toDecimal(paymentValue));
+        this.date.set(DateUtil.toLocalDate(date));
+        this.paymentValue.set(CurrencyUtil.toDecimal(paymentValue));
         this.paymentValueLong = paymentValue;
-        this.paid = new SimpleBooleanProperty(paid);
+        this.paid.set(paid);
     }
 
     public Long getId() {
@@ -42,20 +42,12 @@ public class PaymentModel {
         return date;
     }
 
-    public void setDate(LocalDate date) {
-        this.date.set(date);
-    }
-
     public BigDecimal getPaymentValue() {
         return paymentValue.get();
     }
 
     public SimpleObjectProperty<BigDecimal> paymentValueProperty() {
         return paymentValue;
-    }
-
-    public void setPaymentValue(BigDecimal paymentValue) {
-        this.paymentValue.set(paymentValue);
     }
 
     public long getPaymentValueLong() {
@@ -68,9 +60,5 @@ public class PaymentModel {
 
     public SimpleBooleanProperty paidProperty() {
         return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid.set(paid);
     }
 }

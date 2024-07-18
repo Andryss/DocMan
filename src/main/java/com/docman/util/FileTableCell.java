@@ -1,7 +1,10 @@
 package com.docman.util;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
+import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
@@ -10,14 +13,19 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+@Slf4j
 public class FileTableCell<S> extends TableCell<S, String> {
+    private final VBox cellBox;
     private final Button fileButton;
     private final FontIcon fileNotFoundIcon;
     private final FontIcon fileOkIcon;
 
     public FileTableCell() {
+        cellBox = new VBox();
+        cellBox.setAlignment(Pos.CENTER);
+
         fileButton = new Button();
-        fileButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        cellBox.getChildren().add(fileButton);
 
         fileNotFoundIcon = new FontIcon(MaterialDesignA.ALERT);
         fileNotFoundIcon.setIconSize(16);
@@ -38,7 +46,7 @@ public class FileTableCell<S> extends TableCell<S, String> {
             } else {
                 onFileOk(file);
             }
-            setGraphic(fileButton);
+            setGraphic(cellBox);
         }
     }
 
@@ -55,15 +63,24 @@ public class FileTableCell<S> extends TableCell<S, String> {
                 onFileNotFound(file);
                 return;
             }
-            if (!Desktop.isDesktopSupported()) {
-                AlertUtil.showWarning(String.format("Невозможно открыть файл %s", file.getAbsolutePath()));
+            if (Desktop.isDesktopSupported()) {
+                try {
+                    Desktop.getDesktop().open(file);
+                } catch (IOException e) {
+                    log.error(String.format("Error during file %s opening", file), e);
+                    AlertUtil.showWarning(String.format("Произошла ошибка при открытии файла %s", file.getAbsolutePath()));
+                }
+                return;
+            }
+            if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+                AlertUtil.showWarning("Невозможно открыть файл в вашей операционной системе");
                 return;
             }
             try {
-                Desktop.getDesktop().open(file);
+                Runtime.getRuntime().exec("explorer.exe /select," + file.getAbsolutePath());
             } catch (IOException e) {
-                AlertUtil.showWarning(String.format("Произошла ошибка при открытии файла %s", file.getAbsolutePath()));
-                e.printStackTrace();
+                log.error(String.format("Error during file opening in explorer %s", file), e);
+                AlertUtil.showWarning(String.format("Невозможно открыть файл %s", file.getAbsolutePath()));
             }
         });
     }

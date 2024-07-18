@@ -16,6 +16,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.input.MouseButton;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -29,8 +30,6 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.docman.ScreenUtil.openUpsertContract;
-import static com.docman.ScreenUtil.openUpsertPayment;
 import static com.docman.util.AlertUtil.showWarning;
 
 public class MainViewController implements Initializable {
@@ -59,7 +58,9 @@ public class MainViewController implements Initializable {
         contractTableView.setRowFactory(table -> {
             TableRow<ContractModel> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getClickCount() == 2) openUpsertContract(row.getItem());
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    doOpenUpsertContractForm(row.getItem());
+                }
             });
             return row;
         });
@@ -67,8 +68,8 @@ public class MainViewController implements Initializable {
         paymentTableView.setRowFactory(table -> {
             TableRow<PaymentModel> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getClickCount() == 2) {
-                    openUpsertPayment(contractTableView.getSelectionModel().getSelectedItem(), row.getItem());
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    doOpenUpsertPaymentForm(contractTableView.getSelectionModel().getSelectedItem(), row.getItem());
                 }
             });
             return row;
@@ -222,7 +223,7 @@ public class MainViewController implements Initializable {
     }
 
     public void onAddContract() {
-        openUpsertContract(null).setOnHiding(event -> updateContractTable());
+        doOpenUpsertContractForm(null);
     }
 
     public void onEditContract() {
@@ -231,7 +232,7 @@ public class MainViewController implements Initializable {
             showWarning("Договор для редактирования не выбран");
             return;
         }
-        openUpsertContract(selectedItem).setOnHiding(event -> updateContractTable());
+        doOpenUpsertContractForm(selectedItem);
     }
 
     public void onAddPayment() {
@@ -240,8 +241,7 @@ public class MainViewController implements Initializable {
             showWarning("Сначала нужно выбрать контракт");
             return;
         }
-        openUpsertPayment(selectedContract, null)
-                .setOnHiding(event -> updateContractTableWithSavedSelection());
+        doOpenUpsertPaymentForm(selectedContract, null);
     }
 
     public void onEditPayment() {
@@ -255,7 +255,14 @@ public class MainViewController implements Initializable {
             showWarning("Оплата для редактирования не выбрана");
             return;
         }
-        openUpsertPayment(selectedContract, selectedPayment)
-                .setOnHiding(event -> updateContractTableWithSavedSelection());
+        doOpenUpsertPaymentForm(selectedContract, selectedPayment);
+    }
+
+    private void doOpenUpsertContractForm(ContractModel editingItem) {
+        ScreenUtil.openUpsertContract(editingItem).setOnHiding(event -> updateContractTable());
+    }
+
+    private void doOpenUpsertPaymentForm(ContractModel contract, PaymentModel editingPayment) {
+        ScreenUtil.openUpsertPayment(contract, editingPayment).setOnHiding(event -> updateContractTableWithSavedSelection());
     }
 }

@@ -17,7 +17,7 @@ public class ScreenUtil {
         FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.MAIN.fxmlFile));
         Scene scene = new Scene(loader.load());
         MainViewController controller = loader.getController();
-        doOpen(scene, "DocMan", event -> controller.onShown());
+        doOpen(scene, "DocMan", true, event -> controller.onShown());
     }
 
     @SneakyThrows
@@ -44,14 +44,15 @@ public class ScreenUtil {
 
     @SneakyThrows
     private static Stage doOpen(Scene scene, String title) {
-        return doOpen(scene, title, null);
+        return doOpen(scene, title, false, null);
     }
 
     @SneakyThrows
-    private static Stage doOpen(Scene scene, String title, EventHandler<WindowEvent> onShown) {
+    private static Stage doOpen(Scene scene, String title, boolean resizable, EventHandler<WindowEvent> onShown) {
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);
+        stage.setResizable(resizable);
         stage.setOnShown(onShown);
         stage.show();
         return stage;
