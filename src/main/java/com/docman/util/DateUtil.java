@@ -1,4 +1,4 @@
-package com.docman;
+package com.docman.util;
 
 import java.time.Instant;
 import java.time.LocalDate;

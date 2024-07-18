@@ -1,13 +1,9 @@
-package com.docman;
+package com.docman.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
 import static javafx.scene.control.Alert.AlertType.*;

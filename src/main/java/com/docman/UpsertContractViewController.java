@@ -5,6 +5,8 @@ import com.docman.model.ContractModel;
 import com.docman.model.NotificationEntity;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.NotificationRepository;
+import com.docman.util.CurrencyUtil;
+import com.docman.util.DateUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.docman.AlertUtil.showWarning;
+import static com.docman.util.AlertUtil.showWarning;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class UpsertContractViewController implements Initializable {
@@ -79,6 +81,7 @@ public class UpsertContractViewController implements Initializable {
             });
         });
 
+        if (template.getFilePath() != null) filePathTextField.setText(template.getFilePath());
         noteTextArea.setText(template.getNote());
     }
 

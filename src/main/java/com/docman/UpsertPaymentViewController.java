@@ -5,6 +5,7 @@ import com.docman.model.PaymentEntity;
 import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.PaymentRepository;
+import com.docman.util.CurrencyUtil;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
@@ -15,7 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static com.docman.AlertUtil.showWarning;
+import static com.docman.util.AlertUtil.showWarning;
 
 public class UpsertPaymentViewController {
     private final PaymentRepository paymentRepository = PaymentRepository.INSTANCE;
@@ -31,8 +32,8 @@ public class UpsertPaymentViewController {
         contract = contractModel;
         if (template != null) {
             editingPayment = template;
-            datePicker.setValue(DateUtil.toLocalDate(template.getDate()));
-            paymentValueTextField.setText(CurrencyUtil.toDecimal(template.getPaymentValue()).toString());
+            datePicker.setValue(template.getDate());
+            paymentValueTextField.setText(template.getPaymentValue().toString());
         }
     }
 
@@ -62,7 +63,7 @@ public class UpsertPaymentViewController {
             payment.setId(editingPayment.getId());
             payment.setPaid(editingPayment.isPaid());
             if (editingPayment.isPaid()) {
-                long add = editingPayment.getPaymentValue() - paymentValue;
+                long add = editingPayment.getPaymentValueLong() - paymentValue;
                 contractRepository.updateByIdAddRemainingValue(contract.getId(), add);
             }
             paymentRepository.update(payment);

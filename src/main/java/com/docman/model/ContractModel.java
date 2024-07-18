@@ -1,6 +1,6 @@
 package com.docman.model;
 
-import com.docman.DateUtil;
+import com.docman.util.DateUtil;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

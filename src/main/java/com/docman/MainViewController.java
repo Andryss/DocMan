@@ -6,21 +6,17 @@ import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.NotificationRepository;
 import com.docman.repository.PaymentRepository;
+import com.docman.util.*;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
@@ -33,10 +29,9 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.docman.AlertUtil.showWarning;
 import static com.docman.ScreenUtil.openUpsertContract;
 import static com.docman.ScreenUtil.openUpsertPayment;
-import static java.math.BigDecimal.ZERO;
+import static com.docman.util.AlertUtil.showWarning;
 
 public class MainViewController implements Initializable {
     private final ContractRepository contractRepository = ContractRepository.INSTANCE;
@@ -142,81 +137,26 @@ public class MainViewController implements Initializable {
         remainingValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
                 CurrencyUtil.toDecimal(features.getValue().getRemainingValue())
         ));
-        remainingValueColumn.setCellFactory(column -> new TableCell<>(){
-            @Override
-            protected void updateItem(BigDecimal item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item.toString());
-                    if (item.compareTo(ZERO) < 0) {
-                        setStyle("-fx-text-fill: red");
-                    } else {
-                        setStyle("");
-                    }
-                }
-            }
-        });
+        remainingValueColumn.setCellFactory(column -> new ColoredDecimalCell<>());
         contractTableView.getColumns().add(remainingValueColumn);
 
         TableColumn<ContractModel, String> fileColumn = new TableColumn<>("Файл");
         fileColumn.setCellValueFactory(features -> features.getValue().filePathProperty());
-        fileColumn.setCellFactory(column -> new TableCell<>(){
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    File file = new File(item);
-                    if (!file.exists() || file.isDirectory()) {
-                        Button button = new Button();
-                        button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                        FontIcon icon = new FontIcon("mdi2a-alert");
-                        icon.setIconSize(16);
-                        button.setGraphic(icon);
-                        button.setOnAction(event -> AlertUtil.showWarning(String.format("Файл %s не найден", item)));
-                        setGraphic(button);
-                        return;
-                    }
-                    Button button = new Button();
-                    button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    FontIcon icon = new FontIcon("mdi2f-file");
-                    icon.setIconSize(16);
-                    button.setGraphic(icon);
-                    button.setOnAction(event -> {
-                        if (Desktop.isDesktopSupported()) {
-                            try {
-                                Desktop.getDesktop().open(file);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    setGraphic(button);
-                }
-            }
-        });
+        fileColumn.setCellFactory(column -> new FileTableCell<>());
         contractTableView.getColumns().add(fileColumn);
 
         TableColumn<ContractModel, String> noteColumn = new TableColumn<>("Примечание");
-        noteColumn.setCellValueFactory(new PropertyValueFactory<>("note"));
+        noteColumn.setCellValueFactory(features -> features.getValue().noteProperty());
         contractTableView.getColumns().add(noteColumn);
     }
 
     private void initPaymentTableColumns() {
         TableColumn<PaymentModel, LocalDate> dateColumn = new TableColumn<>("Дата платежа");
-        dateColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                DateUtil.toLocalDate(features.getValue().getDate())
-        ));
+        dateColumn.setCellValueFactory(features -> features.getValue().dateProperty());
         paymentTableView.getColumns().add(dateColumn);
 
         TableColumn<PaymentModel, BigDecimal> paymentValueColumn = new TableColumn<>("Сумма платежа");
-        paymentValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                CurrencyUtil.toDecimal(features.getValue().getPaymentValue())
-        ));
+        paymentValueColumn.setCellValueFactory(features -> features.getValue().paymentValueProperty());
         paymentTableView.getColumns().add(paymentValueColumn);
 
         TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата проведена");
@@ -274,7 +214,7 @@ public class MainViewController implements Initializable {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         payments.forEach(payment -> payment.paidProperty().addListener((obs, oldVal, newVal) -> {
             paymentRepository.setPaid(payment.getId(), newVal);
-            long add = (newVal ? -payment.getPaymentValue() : payment.getPaymentValue());
+            long add = (newVal ? -payment.getPaymentValueLong() : payment.getPaymentValueLong());
             contractRepository.updateByIdAddRemainingValue(payment.getContractId(), add);
             updateContractTableWithSavedSelection();
         }));

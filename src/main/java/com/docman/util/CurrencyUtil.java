@@ -1,4 +1,4 @@
-package com.docman;
+package com.docman.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,23 +1,28 @@
 package com.docman.model;
 
+import com.docman.util.CurrencyUtil;
+import com.docman.util.DateUtil;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class PaymentModel {
     private final Long id;
-    private final Long contractId;
-    private final SimpleObjectProperty<Instant> date;
-    private final SimpleLongProperty paymentValue;
+    private final long contractId;
+    private final SimpleObjectProperty<LocalDate> date;
+    private final SimpleObjectProperty<BigDecimal> paymentValue;
+    private final long paymentValueLong;
     private final SimpleBooleanProperty paid;
 
-    public PaymentModel(Long id, Long contractId, Instant date, long paymentValue, boolean paid) {
+    public PaymentModel(Long id, long contractId, Instant date, long paymentValue, boolean paid) {
         this.id = id;
         this.contractId = contractId;
-        this.date = new SimpleObjectProperty<>(date);
-        this.paymentValue = new SimpleLongProperty(paymentValue);
+        this.date = new SimpleObjectProperty<>(DateUtil.toLocalDate(date));
+        this.paymentValue = new SimpleObjectProperty<>(CurrencyUtil.toDecimal(paymentValue));
+        this.paymentValueLong = paymentValue;
         this.paid = new SimpleBooleanProperty(paid);
     }
 
@@ -25,32 +30,36 @@ public class PaymentModel {
         return id;
     }
 
-    public Long getContractId() {
+    public long getContractId() {
         return contractId;
     }
 
-    public Instant getDate() {
+    public LocalDate getDate() {
         return date.get();
     }
 
-    public SimpleObjectProperty<Instant> dateProperty() {
+    public SimpleObjectProperty<LocalDate> dateProperty() {
         return date;
     }
 
-    public void setDate(Instant date) {
+    public void setDate(LocalDate date) {
         this.date.set(date);
     }
 
-    public long getPaymentValue() {
+    public BigDecimal getPaymentValue() {
         return paymentValue.get();
     }
 
-    public SimpleLongProperty paymentValueProperty() {
+    public SimpleObjectProperty<BigDecimal> paymentValueProperty() {
         return paymentValue;
     }
 
-    public void setPaymentValue(long paymentValue) {
+    public void setPaymentValue(BigDecimal paymentValue) {
         this.paymentValue.set(paymentValue);
+    }
+
+    public long getPaymentValueLong() {
+        return paymentValueLong;
     }
 
     public boolean isPaid() {
