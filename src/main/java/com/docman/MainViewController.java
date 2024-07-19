@@ -185,14 +185,22 @@ public class MainViewController implements Initializable {
         } else {
             ObservableList<ContractModel> filteredContracts = FXCollections.observableArrayList();
             fetchedContracts.stream()
-                    .filter(contract -> contract.getNumber().toLowerCase().contains(filter) ||
-                            contract.getAgent().toLowerCase().contains(filter) ||
-                            contract.getOpenDate().toString().contains(filter) ||
-                            contract.getCloseDate().toString().contains(filter) ||
-                            String.valueOf(contract.getTotalValue()).contains(filter) ||
-                            String.valueOf(contract.getRemainingValue()).contains(filter) ||
-                            contract.getFilePath().contains(filter) ||
-                            contract.getNote().contains(filter))
+                    .filter(contract -> {
+                        String number = contract.getNumber();
+                        String agent = contract.getAgent();
+                        LocalDate openDate = contract.getOpenDate();
+                        LocalDate closeDate = contract.getCloseDate();
+                        String filePath = contract.getFilePath();
+                        String note = contract.getNote();
+                        return number != null && number.toLowerCase().contains(filter) ||
+                                agent != null && agent.toLowerCase().contains(filter) ||
+                                openDate != null && openDate.toString().contains(filter) ||
+                                closeDate != null && closeDate.toString().contains(filter) ||
+                                String.valueOf(contract.getTotalValue()).contains(filter) ||
+                                String.valueOf(contract.getRemainingValue()).contains(filter) ||
+                                filePath != null && filePath.contains(filter) ||
+                                note != null && note.contains(filter);
+                    })
                     .forEach(filteredContracts::add);
             contractTableView.setItems(filteredContracts);
         }
