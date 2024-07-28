@@ -11,16 +11,30 @@ import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+/**
+ * Уведомление
+ */
 @Getter
 @Setter
-
 @Entity
 @Table(name = "notifications")
 public class NotificationEntity {
+    /**
+     * Идентификатор уведомления
+     */
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+    /**
+     * Идентификатор договора
+     */
     private long contractId;
+    /**
+     * Время срабатывания уведомления
+     */
     private Instant timeout;
+    /**
+     * Флаг, если true - уведомление показано
+     */
     private boolean isShown;
 }

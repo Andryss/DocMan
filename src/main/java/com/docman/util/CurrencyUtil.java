@@ -3,6 +3,9 @@ package com.docman.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Вспомогательный класс для работы с денежными величинами
+ */
 public class CurrencyUtil {
     public static long parseCurrency(String text) throws NumberFormatException {
         char[] chars = text.toCharArray();

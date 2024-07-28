@@ -7,6 +7,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * Класс для получения фабрики для создания соединений к БД
+ */
 public class SessionFactoryHolder {
     private static SessionFactory sessionFactory;
 

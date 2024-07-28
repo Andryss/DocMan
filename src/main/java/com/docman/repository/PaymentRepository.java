@@ -5,6 +5,9 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
+/**
+ * Репозиторий для работы с платежами
+ */
 public class PaymentRepository extends AbstractRepository {
     public static PaymentRepository INSTANCE = new PaymentRepository();
     private PaymentRepository() { }

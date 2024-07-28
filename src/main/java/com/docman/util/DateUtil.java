@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+/**
+ * Вспомогательный класс для работы с датами
+ */
 public class DateUtil {
     private static final ZoneId zoneId = ZoneId.systemDefault();
 

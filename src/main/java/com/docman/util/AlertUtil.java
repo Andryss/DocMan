@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import static javafx.scene.control.Alert.AlertType.*;
 
+/**
+ * Вспомогательный класс для работы с уведомлениями (alert)
+ */
 public class AlertUtil {
     public static void showWarning(String content) {
         doShow(WARNING, "Ошибка", content);

@@ -6,6 +6,9 @@ import org.hibernate.query.Query;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Репозиторий для работы с уведомлениями
+ */
 public class NotificationRepository extends AbstractRepository {
     public static NotificationRepository INSTANCE = new NotificationRepository();
     private NotificationRepository() { }

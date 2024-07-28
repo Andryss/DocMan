@@ -5,6 +5,9 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
+/**
+ * Репозиторий для работы с договорами
+ */
 public class ContractRepository extends AbstractRepository {
     public static ContractRepository INSTANCE = new ContractRepository();
     private ContractRepository() { }

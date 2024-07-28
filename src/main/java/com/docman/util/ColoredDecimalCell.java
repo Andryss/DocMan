@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 
 import static java.math.BigDecimal.ZERO;
 
+/**
+ * Класс числовой ячейки таблицы, меняющий цвет на красный при отрицательных значениях
+ */
 public class ColoredDecimalCell<S> extends TableCell<S, BigDecimal> {
     private static final String EMPTY_STYLE = "";
     private static final String RED_COLORED_TEXT_STYLE = "-fx-text-fill: red";

@@ -13,6 +13,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Класс ячейки таблицы с файлом
+ */
 @Slf4j
 public class FileTableCell<S> extends TableCell<S, String> {
     private final VBox cellBox;

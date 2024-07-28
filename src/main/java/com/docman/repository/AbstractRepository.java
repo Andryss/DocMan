@@ -10,6 +10,10 @@ import java.util.function.Function;
 public abstract class AbstractRepository {
     protected final SessionFactory sessionFactory = SessionFactoryHolder.get();
 
+    /**
+     * Выполнение операции внутри транзакции
+     * @param action действие для выполнения внутри транзакции
+     */
     protected void executeInTransaction(Consumer<Session> action) {
         executeInSession(session -> {
             Transaction tx = session.beginTransaction();
@@ -19,6 +23,11 @@ public abstract class AbstractRepository {
         });
     }
 
+    /**
+     * Выполнение операции без транзакции (read-only)
+     * @param action действие операции
+     * @return возвращаемое операцией значение
+     */
     protected  <T> T executeInSession(Function<Session, T> action) {
         Session session = sessionFactory.openSession();
         T result = action.apply(session);

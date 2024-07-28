@@ -100,14 +100,14 @@ public class UpsertContractViewController implements Initializable {
 
         LocalDate openDateValue = openDatePicker.getValue();
         if (openDateValue == null) {
-            showWarning("Дата открытия не выбрана");
+            showWarning("Дата заключения не выбрана");
             return;
         }
         Instant openDate = DateUtil.toInstant(openDateValue);
 
         LocalDate closeDateValue = closeDatePicker.getValue();
         if (closeDateValue == null) {
-            showWarning("Дата закрытия не выбрана");
+            showWarning("Дата окончания не выбрана");
             return;
         }
         Instant closeDate = DateUtil.toInstant(closeDateValue);
@@ -117,7 +117,7 @@ public class UpsertContractViewController implements Initializable {
             String totalValueStr = totalValueTextField.getText().strip();
             totalValue = CurrencyUtil.parseCurrency(totalValueStr);
         } catch (NumberFormatException e) {
-            showWarning("Неверный формат полной стоимости");
+            showWarning("Неверный формат полной суммы");
             return;
         }
 
