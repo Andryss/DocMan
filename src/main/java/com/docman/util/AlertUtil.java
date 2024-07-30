@@ -20,10 +20,6 @@ public class AlertUtil {
         doShow(INFORMATION, "Уведомление", content);
     }
 
-    public static Optional<ButtonType> showConfirm(String content) {
-        return doShow(CONFIRMATION, "Подтверждение", content);
-    }
-
     private static Optional<ButtonType> doShow(AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

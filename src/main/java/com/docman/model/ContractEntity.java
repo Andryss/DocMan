@@ -50,11 +50,11 @@ public class ContractEntity {
      */
     private long remainingValue;
     /**
-     * Файл договора
+     * Файл договора (может быть пустым)
      */
     private String filePath;
     /**
-     * Примечание
+     * Примечание (может быть пустым)
      */
     private String note;
 }

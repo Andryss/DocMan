@@ -91,10 +91,11 @@ public class MainViewController implements Initializable {
                             notification.getTimeout(),
                             DateUtil.toInstant(contract.getCloseDate())
                     );
-                    builder.append(shownIds.size() + 1).append(") Контракт номер ").append(contract.getNumber())
-                            .append(" контрагент ").append(contract.getAgent()).append(" заканчивается через ")
-                            .append(duration.toDays()).append(" дня(ей) (дата окончания ")
-                            .append(contract.getCloseDate()).append(")\n");
+                    builder.append(String.format(
+                            "%s) Контракт номер %s контрагент %s заканчивается через %s дня(ей) (дата окончания %s)\n",
+                            shownIds.size() + 1, contract.getNumber(), contract.getAgent(), duration.toDays(),
+                            contract.getCloseDate()
+                    ));
                     shownIds.add(notification.getId());
                 });
                 builder.setLength(builder.length() - 1);

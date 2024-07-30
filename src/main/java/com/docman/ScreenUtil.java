@@ -8,22 +8,31 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+
+import java.io.IOException;
 
 public class ScreenUtil {
 
-    @SneakyThrows
     public static void openMain() {
         FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.MAIN.fxmlFile));
-        Scene scene = new Scene(loader.load());
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException("Error occurred while opening main form", e);
+        }
         MainViewController controller = loader.getController();
         doOpen(scene, "DocMan", event -> controller.onShown());
     }
 
-    @SneakyThrows
     public static Stage openUpsertContract(ContractModel template) {
         FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.UPSERT_CONTRACT.fxmlFile));
-        Scene scene = new Scene(loader.load());
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException("Error occurred while opening upsert contract form", e);
+        }
 
         UpsertContractViewController controller = loader.getController();
         controller.setTemplate(template);
@@ -31,10 +40,14 @@ public class ScreenUtil {
         return doOpen(scene, (template == null ? "Добавить" : "Редактировать"));
     }
 
-    @SneakyThrows
     public static Stage openUpsertPayment(ContractModel contract, PaymentModel template) {
         FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.UPSERT_PAYMENT.fxmlFile));
-        Scene scene = new Scene(loader.load());
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException("Error occurred while opening upsert payment form", e);
+        }
 
         UpsertPaymentViewController controller = loader.getController();
         controller.setTemplate(contract, template);
@@ -42,12 +55,10 @@ public class ScreenUtil {
         return doOpen(scene, (template == null ? "Добавить" : "Редактировать"));
     }
 
-    @SneakyThrows
     private static Stage doOpen(Scene scene, String title) {
         return doOpen(scene, title, null);
     }
 
-    @SneakyThrows
     private static Stage doOpen(Scene scene, String title, EventHandler<WindowEvent> onShown) {
         Stage stage = new Stage();
         stage.setTitle(title);
