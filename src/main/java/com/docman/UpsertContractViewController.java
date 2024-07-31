@@ -69,7 +69,7 @@ public class UpsertContractViewController implements Initializable {
         agentTextField.setText(template.getAgent());
         openDatePicker.setValue(template.getOpenDate());
         closeDatePicker.setValue(template.getCloseDate());
-        totalValueTextField.setText(CurrencyUtil.toDecimal(template.getTotalValue()).toString());
+        totalValueTextField.setText(template.getTotalValueDecimal().toString());
 
         notificationRepository.findAllByContractId(template.getId()).forEach(notification -> {
             long duration = Duration.between(

@@ -13,16 +13,16 @@ public class PaymentModel {
     private final Long id;
     private final long contractId;
     private final SimpleObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
-    private final SimpleObjectProperty<BigDecimal> paymentValue = new SimpleObjectProperty<>();
-    private final long paymentValueLong;
+    private final long paymentValue;
+    private final SimpleObjectProperty<BigDecimal> paymentValueDecimal = new SimpleObjectProperty<>();
     private final SimpleBooleanProperty paid = new SimpleBooleanProperty();
 
-    public PaymentModel(Long id, long contractId, Instant date, long paymentValue, boolean paid) {
+    public PaymentModel(Long id, long contractId, Instant date, long paymentValueDecimal, boolean paid) {
         this.id = id;
         this.contractId = contractId;
         this.date.set(DateUtil.toLocalDate(date));
-        this.paymentValue.set(CurrencyUtil.toDecimal(paymentValue));
-        this.paymentValueLong = paymentValue;
+        this.paymentValue = paymentValueDecimal;
+        this.paymentValueDecimal.set(CurrencyUtil.toDecimal(paymentValueDecimal));
         this.paid.set(paid);
     }
 
@@ -42,16 +42,16 @@ public class PaymentModel {
         return date;
     }
 
-    public BigDecimal getPaymentValue() {
-        return paymentValue.get();
-    }
-
-    public SimpleObjectProperty<BigDecimal> paymentValueProperty() {
+    public long getPaymentValue() {
         return paymentValue;
     }
 
-    public long getPaymentValueLong() {
-        return paymentValueLong;
+    public BigDecimal getPaymentValueDecimal() {
+        return paymentValueDecimal.get();
+    }
+
+    public SimpleObjectProperty<BigDecimal> paymentValueDecimalProperty() {
+        return paymentValueDecimal;
     }
 
     public boolean isPaid() {

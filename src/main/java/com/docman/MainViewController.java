@@ -6,8 +6,10 @@ import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.NotificationRepository;
 import com.docman.repository.PaymentRepository;
-import com.docman.util.*;
-import javafx.beans.property.SimpleObjectProperty;
+import com.docman.util.AlertUtil;
+import com.docman.util.ColoredDecimalCell;
+import com.docman.util.DateUtil;
+import com.docman.util.FileTableCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -130,15 +132,11 @@ public class MainViewController implements Initializable {
         contractTableView.getColumns().add(datesSuperColumn);
 
         TableColumn<ContractModel, BigDecimal> totalValueColumn = new TableColumn<>("Полная сумма");
-        totalValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                CurrencyUtil.toDecimal(features.getValue().getTotalValue())
-        ));
+        totalValueColumn.setCellValueFactory(features -> features.getValue().totalValueDecimalProperty());
         contractTableView.getColumns().add(totalValueColumn);
 
         TableColumn<ContractModel, BigDecimal> remainingValueColumn = new TableColumn<>("Остаток");
-        remainingValueColumn.setCellValueFactory(features -> new SimpleObjectProperty<>(
-                CurrencyUtil.toDecimal(features.getValue().getRemainingValue())
-        ));
+        remainingValueColumn.setCellValueFactory(features -> features.getValue().remainingValueDecimalProperty());
         remainingValueColumn.setCellFactory(column -> new ColoredDecimalCell<>());
         contractTableView.getColumns().add(remainingValueColumn);
 
@@ -158,7 +156,7 @@ public class MainViewController implements Initializable {
         paymentTableView.getColumns().add(dateColumn);
 
         TableColumn<PaymentModel, BigDecimal> paymentValueColumn = new TableColumn<>("Сумма платежа");
-        paymentValueColumn.setCellValueFactory(features -> features.getValue().paymentValueProperty());
+        paymentValueColumn.setCellValueFactory(features -> features.getValue().paymentValueDecimalProperty());
         paymentTableView.getColumns().add(paymentValueColumn);
 
         TableColumn<PaymentModel, Boolean> paidColumn = new TableColumn<>("Оплата проведена");
@@ -197,8 +195,8 @@ public class MainViewController implements Initializable {
                                 agent != null && agent.toLowerCase().contains(filter) ||
                                 openDate != null && openDate.toString().contains(filter) ||
                                 closeDate != null && closeDate.toString().contains(filter) ||
-                                String.valueOf(contract.getTotalValue()).contains(filter) ||
-                                String.valueOf(contract.getRemainingValue()).contains(filter) ||
+                                contract.getTotalValueDecimal().toString().contains(filter) ||
+                                contract.getRemainingValueDecimal().toString().contains(filter) ||
                                 filePath != null && filePath.contains(filter) ||
                                 note != null && note.contains(filter);
                     })
@@ -224,7 +222,7 @@ public class MainViewController implements Initializable {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         payments.forEach(payment -> payment.paidProperty().addListener((obs, oldVal, newVal) -> {
             paymentRepository.setPaid(payment.getId(), newVal);
-            long add = (newVal ? -payment.getPaymentValueLong() : payment.getPaymentValueLong());
+            long add = (newVal ? -payment.getPaymentValue() : payment.getPaymentValue());
             contractRepository.updateByIdAddRemainingValue(payment.getContractId(), add);
             updateContractTableWithSavedSelection();
         }));

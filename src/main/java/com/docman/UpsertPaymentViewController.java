@@ -33,7 +33,7 @@ public class UpsertPaymentViewController {
         if (template != null) {
             editingPayment = template;
             datePicker.setValue(template.getDate());
-            paymentValueTextField.setText(template.getPaymentValue().toString());
+            paymentValueTextField.setText(template.getPaymentValueDecimal().toString());
         }
     }
 
@@ -63,7 +63,7 @@ public class UpsertPaymentViewController {
             payment.setId(editingPayment.getId());
             payment.setPaid(editingPayment.isPaid());
             if (editingPayment.isPaid()) {
-                long add = editingPayment.getPaymentValueLong() - paymentValue;
+                long add = editingPayment.getPaymentValue() - paymentValue;
                 contractRepository.updateByIdAddRemainingValue(contract.getId(), add);
             }
             paymentRepository.update(payment);
