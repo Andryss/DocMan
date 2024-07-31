@@ -8,25 +8,37 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-public class ScreenUtil {
+@Component
+@RequiredArgsConstructor
+public class ScreenManager {
 
-    public static void openMain() {
-        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.MAIN.fxmlFile));
+    private final ApplicationContext context;
+
+    public void openMain() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
+        loader.setControllerFactory(context::getBean);
         Scene scene;
         try {
             scene = new Scene(loader.load());
         } catch (IOException e) {
             throw new RuntimeException("Error occurred while opening main form", e);
         }
+
         MainViewController controller = loader.getController();
+        controller.setOpenUpsertContractForm(this::openUpsertContract);
+        controller.setOpenUpsertPaymentForm(this::openUpsertPayment);
+
         doOpen(scene, "DocMan", event -> controller.onShown());
     }
 
-    public static Stage openUpsertContract(ContractModel template) {
-        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.UPSERT_CONTRACT.fxmlFile));
+    public Stage openUpsertContract(ContractModel template) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("upsert-contract-view.fxml"));
+        loader.setControllerFactory(context::getBean);
         Scene scene;
         try {
             scene = new Scene(loader.load());
@@ -40,8 +52,9 @@ public class ScreenUtil {
         return doOpen(scene, (template == null ? "Добавить" : "Редактировать"));
     }
 
-    public static Stage openUpsertPayment(ContractModel contract, PaymentModel template) {
-        FXMLLoader loader = new FXMLLoader(ScreenUtil.class.getResource(DocManScreen.UPSERT_PAYMENT.fxmlFile));
+    public Stage openUpsertPayment(ContractModel contract, PaymentModel template) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("upsert-payment-view.fxml"));
+        loader.setControllerFactory(context::getBean);
         Scene scene;
         try {
             scene = new Scene(loader.load());
@@ -66,14 +79,5 @@ public class ScreenUtil {
         stage.setOnShown(onShown);
         stage.show();
         return stage;
-    }
-
-    @RequiredArgsConstructor
-    public enum DocManScreen {
-        MAIN("main-view.fxml"),
-        UPSERT_CONTRACT("upsert-contract-view.fxml"),
-        UPSERT_PAYMENT("upsert-payment-view.fxml");
-
-        private final String fxmlFile;
     }
 }

@@ -1,7 +1,9 @@
 package com.docman.repository;
 
 import com.docman.model.NotificationEntity;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
@@ -9,10 +11,12 @@ import java.util.List;
 /**
  * Репозиторий для работы с уведомлениями
  */
+@Repository
 public class NotificationRepository extends AbstractRepository {
-    public static NotificationRepository INSTANCE = new NotificationRepository();
-    private NotificationRepository() { }
 
+    public NotificationRepository(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     public void saveAll(List<NotificationEntity> notifications) {
         executeInTransaction(session -> notifications.forEach(session::persist));

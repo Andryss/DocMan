@@ -1,16 +1,21 @@
 package com.docman.repository;
 
 import com.docman.model.PaymentEntity;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Репозиторий для работы с платежами
  */
+@Repository
 public class PaymentRepository extends AbstractRepository {
-    public static PaymentRepository INSTANCE = new PaymentRepository();
-    private PaymentRepository() { }
+
+    public PaymentRepository(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     public List<PaymentEntity> findAllByContractId(long contractId) {
         return executeInSession(session -> {

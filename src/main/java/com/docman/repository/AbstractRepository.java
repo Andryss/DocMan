@@ -1,5 +1,6 @@
 package com.docman.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -7,8 +8,9 @@ import org.hibernate.Transaction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@RequiredArgsConstructor
 public abstract class AbstractRepository {
-    protected final SessionFactory sessionFactory = SessionFactoryHolder.get();
+    private final SessionFactory sessionFactory;
 
     /**
      * Выполнение операции внутри транзакции

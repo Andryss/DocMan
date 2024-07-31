@@ -1,16 +1,21 @@
 package com.docman.repository;
 
 import com.docman.model.ContractEntity;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Репозиторий для работы с договорами
  */
+@Repository
 public class ContractRepository extends AbstractRepository {
-    public static ContractRepository INSTANCE = new ContractRepository();
-    private ContractRepository() { }
+
+    public ContractRepository(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
     public List<ContractEntity> findAll() {
         return executeInSession(session ->

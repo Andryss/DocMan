@@ -8,6 +8,7 @@ import com.docman.repository.NotificationRepository;
 import com.docman.util.CurrencyUtil;
 import com.docman.util.DateUtil;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -16,6 +17,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.URL;
@@ -30,9 +33,13 @@ import java.util.ResourceBundle;
 import static com.docman.util.AlertUtil.showWarning;
 import static java.time.temporal.ChronoUnit.DAYS;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+@Component
 public class UpsertContractViewController implements Initializable {
-    private final ContractRepository contractRepository = ContractRepository.INSTANCE;
-    private final NotificationRepository notificationRepository = NotificationRepository.INSTANCE;
+    @Autowired
+    private ContractRepository contractRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private ContractModel editingContract;
 

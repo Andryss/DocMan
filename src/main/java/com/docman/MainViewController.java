@@ -12,6 +12,7 @@ import com.docman.util.DateUtil;
 import com.docman.util.FileTableCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -19,6 +20,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Stage;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -29,21 +34,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.docman.util.AlertUtil.showWarning;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+@Component
 public class MainViewController implements Initializable {
-    private final ContractRepository contractRepository = ContractRepository.INSTANCE;
-    private final PaymentRepository paymentRepository = PaymentRepository.INSTANCE;
-    private final NotificationRepository notificationRepository = NotificationRepository.INSTANCE;
+    @Autowired
+    private ContractRepository contractRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public TableView<ContractModel> contractTableView;
     public TableView<PaymentModel> paymentTableView;
     public TextField filterTextField;
 
     private List<ContractModel> fetchedContracts = new ArrayList<>();
+
+    @Setter
+    private Function<ContractModel, Stage> openUpsertContractForm;
+    @Setter
+    private BiFunction<ContractModel, PaymentModel, Stage> openUpsertPaymentForm;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -266,10 +282,14 @@ public class MainViewController implements Initializable {
     }
 
     private void doOpenUpsertContractForm(ContractModel editingItem) {
-        ScreenUtil.openUpsertContract(editingItem).setOnHiding(event -> updateContractTable());
+        if (openUpsertContractForm == null) return;
+        openUpsertContractForm.apply(editingItem)
+                .setOnHiding(event -> updateContractTable());
     }
 
     private void doOpenUpsertPaymentForm(ContractModel contract, PaymentModel editingPayment) {
-        ScreenUtil.openUpsertPayment(contract, editingPayment).setOnHiding(event -> updateContractTableWithSavedSelection());
+        if (openUpsertPaymentForm == null) return;
+        openUpsertPaymentForm.apply(contract, editingPayment)
+                .setOnHiding(event -> updateContractTableWithSavedSelection());
     }
 }

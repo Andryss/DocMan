@@ -11,6 +11,8 @@ import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,9 +20,13 @@ import java.time.ZoneId;
 
 import static com.docman.util.AlertUtil.showWarning;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+@Component
 public class UpsertPaymentViewController {
-    private final PaymentRepository paymentRepository = PaymentRepository.INSTANCE;
-    private final ContractRepository contractRepository = ContractRepository.INSTANCE;
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private ContractRepository contractRepository;
 
     private ContractModel contract;
     private PaymentModel editingPayment;
