@@ -6,13 +6,9 @@ import com.docman.model.PaymentModel;
 import com.docman.repository.ContractRepository;
 import com.docman.repository.NotificationRepository;
 import com.docman.repository.PaymentRepository;
-import com.docman.util.AlertUtil;
-import com.docman.util.ColoredDecimalCell;
-import com.docman.util.DateUtil;
-import com.docman.util.FileTableCell;
+import com.docman.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -163,6 +159,7 @@ public class MainViewController implements Initializable {
 
         TableColumn<ContractModel, String> noteColumn = new TableColumn<>("Примечание");
         noteColumn.setCellValueFactory(features -> features.getValue().noteProperty());
+        noteColumn.setCellFactory(column -> new TextAreaCell<>());
         contractTableView.getColumns().add(noteColumn);
     }
 

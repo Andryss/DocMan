@@ -8,7 +8,6 @@ import com.docman.repository.NotificationRepository;
 import com.docman.util.CurrencyUtil;
 import com.docman.util.DateUtil;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
