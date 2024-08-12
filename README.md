@@ -11,5 +11,7 @@ Functionality:
 
 ## Usage
 
-1. Build jar file from project.
-2. Build exe file from jar (e.g. with [Launch4j](https://launch4j.sourceforge.net/))
+1. Build jar file from project (`mvnw clean package` builds jar and places it in the *target* directory)
+2. [Optional] Create exe file from built jar (e.g. with [Launch4j](https://launch4j.sourceforge.net/))
+
+**Notice**: JRE 11 and higher required to run the app
