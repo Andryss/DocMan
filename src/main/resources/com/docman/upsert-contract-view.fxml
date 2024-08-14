@@ -29,7 +29,7 @@
             <Label text="Дата заключения" GridPane.rowIndex="2" />
             <DatePicker fx:id="openDatePicker" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label text="Дата окончания" GridPane.rowIndex="3" />
-            <DatePicker fx:id="closeDatePicker" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <DatePicker fx:id="closeDatePicker" maxWidth="1.7976931348623157E308" onAction="#onCloseDateChanged" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label text="Полная сумма" GridPane.rowIndex="4" />
             <TextField fx:id="totalValueTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Label text="Уведомления" GridPane.rowIndex="5" />

@@ -24,10 +24,8 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static com.docman.util.AlertUtil.showWarning;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -163,7 +161,7 @@ public class UpsertContractViewController implements Initializable {
         Instant now = Instant.now();
         checkboxesDaysTimeout.forEach((checkBox, days) -> {
             Instant timeout = contract.getCloseDate().minus(days, DAYS);
-            if (checkBox.isSelected() && timeout.isAfter(now)) {
+            if (!checkBox.isDisabled() && checkBox.isSelected() && timeout.isAfter(now)) {
                 NotificationEntity n = new NotificationEntity();
                 n.setContractId(contract.getId());
                 n.setTimeout(timeout);
@@ -180,6 +178,13 @@ public class UpsertContractViewController implements Initializable {
 
     private void closeWindow(ActionEvent event) {
         ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+    }
+
+    public void onCloseDateChanged() {
+        Instant closeDate = DateUtil.toInstant(closeDatePicker.getValue());
+        Instant now = Instant.now();
+        checkboxesDaysTimeout.forEach((checkBox, days) ->
+                checkBox.setDisable(closeDate.minus(days, DAYS).isBefore(now)));
     }
 
     public void onChooseFile(ActionEvent event) {
