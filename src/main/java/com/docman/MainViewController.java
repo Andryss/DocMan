@@ -98,28 +98,36 @@ public class MainViewController implements Initializable {
         notificationRepository.findAllNotShownByTimeoutBefore(Instant.now()).forEach(n -> {
             batch.add(n);
             if (batch.size() == 10) {
-                StringBuilder builder = new StringBuilder();
-                batch.forEach(notification -> {
-                    ContractModel contract = contractsMap.get(notification.getContractId());
-                    Duration duration = Duration.between(
-                            notification.getTimeout(),
-                            DateUtil.toInstant(contract.getCloseDate())
-                    );
-                    builder.append(String.format(
-                            "%s) Контракт номер %s контрагент %s заканчивается через %s дня(ей) (дата окончания %s)\n",
-                            shownIds.size() + 1, contract.getNumber(), contract.getAgent(), duration.toDays(),
-                            contract.getCloseDate()
-                    ));
-                    shownIds.add(notification.getId());
-                });
-                builder.setLength(builder.length() - 1);
-                AlertUtil.showNotification(builder.toString());
+                handleNotificationsBatch(contractsMap, shownIds, batch);
                 batch.clear();
             }
         });
+        if (!batch.isEmpty()) {
+            handleNotificationsBatch(contractsMap, shownIds, batch);
+        }
         if (!shownIds.isEmpty()) {
             notificationRepository.setShownByIds(shownIds);
         }
+    }
+
+    private static void handleNotificationsBatch(Map<Long, ContractModel> contractsMap, List<Long> shownIds,
+                                                 List<NotificationEntity> batch) {
+        StringBuilder builder = new StringBuilder();
+        batch.forEach(notification -> {
+            ContractModel contract = contractsMap.get(notification.getContractId());
+            Duration duration = Duration.between(
+                    notification.getTimeout(),
+                    DateUtil.toInstant(contract.getCloseDate())
+            );
+            builder.append(String.format(
+                    "%s) Контракт номер %s контрагент %s заканчивается через %s дня(ей) (дата окончания %s)\n",
+                    shownIds.size() + 1, contract.getNumber(), contract.getAgent(), duration.toDays(),
+                    contract.getCloseDate()
+            ));
+            shownIds.add(notification.getId());
+        });
+        builder.setLength(builder.length() - 1);
+        AlertUtil.showNotification(builder.toString());
     }
 
     private void initContractTableColumns() {
