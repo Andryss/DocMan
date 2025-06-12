@@ -1,5 +1,7 @@
 # DocMan
 
+![icon](doc/icon.png)
+
 ## Summary
 
 Desktop GUI application for contracts and payments management.
